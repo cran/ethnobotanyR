@@ -3,7 +3,7 @@
 \docType{data}
 \name{ethnobotanydata}
 \alias{ethnobotanydata}
-\title{Prices of 50,000 round cut diamonds.}
+\title{Ethnobotany data set.}
 \format{A data frame with 80 rows and 12 variables:
 \describe{
   \item{informant}{anonymized id's of 20 knowledge holders}

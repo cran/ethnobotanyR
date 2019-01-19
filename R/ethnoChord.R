@@ -1,7 +1,7 @@
 #' Create a chord diagram of ethnobotany uses and species
 #'
 #' This function allows you to create a chord diagram of species and uses for ethnobotany studies.
-#' @source Whitney, C. W., Bahati, J., and Gebauer, J. (2018), Ethnobotany and agrobiodiversity; valuation of plants in the homegardens of southwestern Uganda. Ethnobiology Letters, 9(2), 90-100. <DOI:10.14237/ebl.9.2.2018.503.>
+#' @source Whitney, C. W., Bahati, J., and Gebauer, J. (2018), Ethnobotany and agrobiodiversity; valuation of plants in the homegardens of southwestern Uganda. Ethnobiology Letters, 9(2), 90-100. <https://doi.org/10.14237/ebl.9.2.2018.503>
 #' @param data is an ethnobotany data set with column 1 'informant' and 2 'sp_name' as row identifiers of informants and of species names respectively.
 #' The rest of the columns are the identified ethnobotany use categories. The data should be populated with counts of uses per person (should be 0 or 1 values).
 #' 
@@ -13,6 +13,8 @@
 #' @importFrom circlize circos.text 
 #' @importFrom circlize get.cell.meta.data
 #' @importFrom graphics strwidth
+#' @importFrom assertthat validate_that
+#' @importFrom assertthat see_if
 #' 
 #' @keywords ethnobotany, cultural value, use report
 #'
@@ -35,7 +37,21 @@ ethnoChord <- function(data) {
          call. = FALSE)
   }
   
-  value <- strwidth <- NULL # Setting the variables to NULL first, appeasing R CMD check
+  sp_name <- informant <- value <- strwidth <- NULL # Setting the variables to NULL first, appeasing R CMD check
+  
+  #add error stops with validate_that
+  assertthat::validate_that("informant" %in% colnames(data), msg = "The required column called \"informant\" is missing from your data. Add it.")
+  assertthat::validate_that("sp_name" %in% colnames(data), msg = "The required column called \"sp_name\" is missing from your data. Add it.")
+  
+  assertthat::validate_that(is.factor(data$informant), msg = "The \"informant\" is not a factor variable. Transform it.")
+  assertthat::validate_that(is.factor(data$sp_name), msg = "The \"sp_name\" is not a factor variable. Transform it.")
+  
+  assertthat::validate_that(all(sum(dplyr::select(data, -informant, -sp_name)>0)) , msg = "The sum of all UR is not greater than zero. Perhaps not all uses have values or are not numeric.")
+  
+  ## Use 'complete.cases' from stats to get to the collection of obs without NA
+  data_complete<-data[stats::complete.cases(data), ]
+  #message about complete cases
+  assertthat::see_if(length(data_complete) == length(data), msg = "Some of your observations included \"NA\" and were removed. Consider using \"0\" instead.")
   
   #Melt ethnobotany data
   mat <- reshape::melt(data, id=c("informant","sp_name")) %>% dplyr::filter(value >=1) %>% dplyr::select(2:3) 
@@ -58,7 +74,6 @@ ethnoChord <- function(data) {
                             niceFacing = TRUE, adj = c(0, 0.5), col = "black")
     }
   }, bg.border = NA)
-  
   
     print("Chord diagram for each use related to each species in the data set")
 }
