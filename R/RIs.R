@@ -1,7 +1,7 @@
 #' #Relative Importance Index (RI)
 #'
 #' This function allows you to calculate the relative importance index (RI) per species, published by Pardo-de-Santayana (2003).
-#' @source Tardío, J., and M. Pardo-de-Santayana, 2008. Cultural Importance Indices: A Comparative Analysis Based on the Useful Wild Plants of Southern Cantabria (Northern Spain) 1. Economic Botany, 62(1), 24-39. <https://doi.org/10.1007/s12231-007-9004-5>
+#' @source Tardio, J., and M. Pardo-de-Santayana, 2008. Cultural Importance Indices: A Comparative Analysis Based on the Useful Wild Plants of Southern Cantabria (Northern Spain) 1. Economic Botany, 62(1), 24-39. <https://doi.org/10.1007/s12231-007-9004-5>
 #' @param data is an ethnobotany data set with column 1 'informant' and 2 'sp_name' as row identifiers of informants and of species names respectively.
 #' The rest of the columns are the identified ethnobotany use categories. The data should be populated with counts of uses per person (should be 0 or 1 values).
 #' @keywords quantitative ethnobotany, relative importance
@@ -10,7 +10,8 @@
 #' @importFrom stats aggregate
 #' @importFrom assertthat validate_that
 #' @importFrom assertthat see_if
-#'
+#' @importFrom dplyr select
+#' 
 #' @examples
 #' 
 #' RIs(ethnobotanydata)
@@ -38,26 +39,28 @@ RIs <- function(data) {
   #message about complete cases
   assertthat::see_if(length(data_complete) == length(data), msg = "Some of your observations included \"NA\" and were removed. Consider using \"0\" instead.")
   
-    #calculate RFCs
+ 
+    #create subsettable data for RFCs
     RFCstestdata <- data
-    RFCstestdata$FCps <- rowSums((RFCstestdata[,
-        -c(1:2)]) > 0)
-    RFCstestdata$FCps[RFCstestdata$FCps >
-        0] <- 1
+    
+    #calculate RFCs
+    RFCstestdata$FCps <- rowSums(dplyr::select(RFCstestdata, -informant, -sp_name) > 0)
+    RFCstestdata$FCps[RFCstestdata$FCps >0] <- 1
     RFCstestdata2 <- plyr::ddply(RFCstestdata,
         ~sp_name, plyr::summarise, FCs = sum(FCps))
     RFCstestdata2$RFCs <- RFCstestdata2$FCs/max(RFCstestdata2$FCs)
     RFCs <- RFCstestdata2[, c(1, length(names(RFCstestdata2)))]
     
-    #calculate RNUs
+   
+    #create subsettable data for RFCs
     RNUstestdata <- data
-    RNUsdataaggr <- stats::aggregate(RNUstestdata[,
-        -c(1:2)], by = list(sp_name = RNUstestdata$sp_name),
-        FUN = sum)
-    RNUsdataaggr[, -1][RNUsdataaggr[, -1] >
-        0] <- 1
-    RNUsdataaggr$NUs <- rowSums(RNUsdataaggr[,
-        -1])
+    
+    #calculate RNUs
+    RNUsdataaggr <- stats::aggregate(dplyr::select(RNUstestdata, -informant, -sp_name), 
+                                     by = list(sp_name = RNUstestdata$sp_name),
+                                     FUN = sum)
+    RNUsdataaggr[, -1][RNUsdataaggr[, -1] > 0] <- 1
+    RNUsdataaggr$NUs <- rowSums(RNUsdataaggr[,-1])
     RNUsdataaggr[, c(1, length(names(RNUsdataaggr)))]
     RNUsdataaggr$RNUs <- RNUsdataaggr$NUs/max(RNUsdataaggr$NUs)
     RNUs <- RNUsdataaggr[, c(1, length(names(RNUsdataaggr)))]
@@ -70,5 +73,5 @@ RIs <- function(data) {
     RIs <- RIs[order(-RIs$RIs),] 
 
     print("Relative Importance Index (RI) for each species in the data set")
-    print(RIs[, c(1, length(names(RIs)))])
+    print(RIs[, c(1, length(names(RIs)))], digits=3)
 }

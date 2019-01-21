@@ -1,4 +1,4 @@
-#' Calculate the use report (UR) per secies
+#' Calculate the use report (UR) per species
 #'
 #' This function allows you to calculate the use report (UR) per secies, a common metric for ethnobotany studies.
 #' @param data is an ethnobotany data set with column 1 'informant' and 2 'sp_name' as row identifiers of informants and of species names respectively.
@@ -22,7 +22,7 @@ URs <- function(data) {
             call. = FALSE)
     }
   
-  sp_name <- informant <- URps <- NULL # Setting the variables to NULL first, appeasing R CMD check
+  URdata <- URs <- sp_name <- informant <- URps <- NULL # Setting the variables to NULL first, appeasing R CMD check
   
   #add error stops with validate_that
   assertthat::validate_that("informant" %in% colnames(data), msg = "The required column called \"informant\" is missing from your data. Add it.")

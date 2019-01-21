@@ -4,8 +4,10 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ------------------------------------------------------------------------
 load("ethnobotanydata.rda")
+
+## ---- echo= FALSE--------------------------------------------------------
+knitr::kable(head(ethnobotanydata), digits = 2, caption = "First six rows of the example ethnobotany data included with ethnobotanyR")
 
 ## ------------------------------------------------------------------------
 ethnobotanyR::URs(ethnobotanydata)
