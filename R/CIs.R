@@ -7,25 +7,34 @@
 #' @keywords quantitative ethnobotany cultural importance
 #'
 #' @importFrom magrittr %>%
-#' @importFrom plyr ddply 
-#' @importFrom plyr summarise
-#' @importFrom dplyr select
-#' @importFrom assertthat validate_that
-#' @importFrom assertthat see_if
+#' @importFrom dplyr filter summarize select left_join group_by arrange
+#' @importFrom assertthat validate_that see_if
 #' 
 #' @examples
 #' 
+#' #Use built-in ethnobotany data example
 #' CIs(ethnobotanydata)
+#' 
+#' #Generate random dataset of three informants uses for four species
+#' eb_data <- data.frame(replicate(10,sample(0:1,20,rep=TRUE)))
+#' names(eb_data) <- gsub(x = names(eb_data), pattern = "X", replacement = "Use_")  
+#' eb_data$informant<-sample(c('User_1', 'User_2', 'User_3'), 20, replace=TRUE)
+#' eb_data$sp_name<-sample(c('sp_1', 'sp_2', 'sp_3', 'sp_4'), 20, replace=TRUE)
+#' CIs(eb_data)
 #'
 #'@export CIs
 #'
 CIs <- function(data) {
-    if (!requireNamespace("plyr", quietly = TRUE)) {
-        stop("Package \"plyr\" needed for this function to work. Please install it.",
+    if (!requireNamespace("dplyr", quietly = TRUE)) {
+        stop("Package \"dplyr\" needed for this function to work. Please install it.",
             call. = FALSE)
     }
+  if (!requireNamespace("magrittr", quietly = TRUE)) {
+    stop("Package \"magrittr\" needed for this function to work. Please install it.",
+         call. = FALSE)
+    }
   
-  CIs <- URdata  <- data_Ci <- data_URs <- URps <- sp_name <- informant <- NULL # Setting the variables to NULL first, appeasing R CMD check
+  CI <- CIs <- URdata  <- data_Ci <- data_URs <- URps <- sp_name <- informant <- NULL # Setting the variables to NULL first, appeasing R CMD check
   
   #add error stops with validate_that
   assertthat::validate_that("informant" %in% colnames(data), msg = "The required column called \"informant\" is missing from your data. Add it.")
@@ -43,17 +52,22 @@ CIs <- function(data) {
   
   URdata<- data #create subset-able data
   
+  #calculate URs
   URdata$URps <- dplyr::select(URdata, -informant, -sp_name) %>% rowSums()
-    data_URs <- plyr::ddply(URdata, ~sp_name,
-                plyr::summarise, URs = sum(URps))
+    data_URs <- URdata %>% dplyr::group_by(sp_name) %>%
+      dplyr::summarize (URs = sum(URps))
+    
+    #create new subset-able data
     data_Ci <- data_URs
-    data_Ci$Ci <- data_URs$URs/(length(unique(URdata$informant)) *
+    
+    #calcualte CI (UR/N)
+    data_Ci$CI <- data_URs$URs/(length(unique(URdata$informant)) *
         ncol(dplyr::select(URdata, -informant, -sp_name)))
     
-    #change sort order
-    CIs<-data_Ci[c(1, 3)]
-    CIs <- CIs[order(-CIs$Ci),] 
+    #change sort order, arragne and round
+    CIs <- data_Ci %>% dplyr::select(-URs) %>%
+      dplyr::arrange(-CI) %>%
+      dplyr::mutate(CI = round(CI, 4))
     
-    print("Cultural Importance index (CI) for each species in the data set")
-    print(CIs)
+    print(as.data.frame(CIs))
 }

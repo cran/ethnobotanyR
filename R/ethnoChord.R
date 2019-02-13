@@ -7,8 +7,7 @@
 #' 
 #' @importFrom magrittr %>%
 #' @importFrom reshape melt
-#' @importFrom dplyr filter 
-#' @importFrom dplyr select 
+#' @importFrom dplyr filter select 
 #' @importFrom circlize chordDiagram
 #' @importFrom circlize circos.text 
 #' @importFrom circlize get.cell.meta.data
@@ -20,7 +19,15 @@
 #'
 #' @examples
 #' 
+#' #Use built-in ethnobotany data example
 #' ethnoChord(ethnobotanydata)
+#' 
+#' #Generate random dataset of three informants uses for four species
+#' eb_data <- data.frame(replicate(10,sample(0:1,20,rep=TRUE)))
+#' names(eb_data) <- gsub(x = names(eb_data), pattern = "X", replacement = "Use_")  
+#' eb_data$informant<-sample(c('User_1', 'User_2', 'User_3'), 20, replace=TRUE)
+#' eb_data$sp_name<-sample(c('sp_1', 'sp_2', 'sp_3', 'sp_4'), 20, replace=TRUE)
+#' ethnoChord(eb_data)
 #' 
 #' @export ethnoChord
 ethnoChord <- function(data) {
@@ -34,6 +41,10 @@ ethnoChord <- function(data) {
    }
   if (!requireNamespace("dplyr", quietly = TRUE)) {
     stop("Package \"dplyr\" needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+  if (!requireNamespace("magrittr", quietly = TRUE)) {
+    stop("Package \"magrittr\" needed for this function to work. Please install it.",
          call. = FALSE)
   }
   
@@ -54,7 +65,8 @@ ethnoChord <- function(data) {
   assertthat::see_if(length(data_complete) == length(data), msg = "Some of your observations included \"NA\" and were removed. Consider using \"0\" instead.")
   
   #Melt ethnobotany data
-  mat <- reshape::melt(data, id=c("informant","sp_name")) %>% dplyr::filter(value >=1) %>% dplyr::select(2:3) 
+  mat <- reshape::melt(data, id=c("informant","sp_name")) %>% dplyr::filter(value >=1)%>%
+   dplyr::arrange(dplyr::desc(informant)) %>%  dplyr::arrange(dplyr::desc(sp_name)) %>% dplyr::select(2:3)
   
   #Create chord plot
   

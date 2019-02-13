@@ -1,45 +1,40 @@
-#' Number of Uses (NU)
+#' Radial bar plot of use reports (UR) per species
 #'
-#' This function allows you to calculate the number of uses (NU) per species.
-#'
+#' Creates a radial bar plot of use reports (UR) per species based on the `UR function`.
 #' @param data is an ethnobotany data set with column 1 'informant' and 2 'sp_name' as row identifiers of informants and of species names respectively.
 #' The rest of the columns are the identified ethnobotany use categories. The data should be populated with counts of uses per person (should be 0 or 1 values).
-#' @keywords quantitative ethnobotany, number of uses
+#' @param analysis is one of the quantitative ethnobotany functions from ethnobotanyR, i.e. ethnobotanyR::FCs.
+#' @keywords ethnobotany, cultural value, use report
 #'
-#' @importFrom stats aggregate
-#' @importFrom assertthat validate_that
-#' @importFrom assertthat see_if
-#' @importFrom dplyr select
-#' 
-#' 
+#' @importFrom magrittr %>%
+#' @importFrom dplyr filter summarize select left_join group_by 
+#' @importFrom assertthat validate_that see_if
+#' @importFrom ggplot2 ggplot aes geom_bar coord_polar theme_minimal geom_bar scale_y_continuous
+#'  
 #' @examples
 #' 
-#' #Use built-in ethnobotany data example
-#' NUs(ethnobotanydata)
+#' #Use built-in ethnobotany data example and Frequency of Citation function FCs()
+#' Radial_plot(ethnobotanydata, analysis = FCs)
 #' 
 #' #Generate random dataset of three informants uses for four species
 #' eb_data <- data.frame(replicate(10,sample(0:1,20,rep=TRUE)))
 #' names(eb_data) <- gsub(x = names(eb_data), pattern = "X", replacement = "Use_")  
 #' eb_data$informant<-sample(c('User_1', 'User_2', 'User_3'), 20, replace=TRUE)
 #' eb_data$sp_name<-sample(c('sp_1', 'sp_2', 'sp_3', 'sp_4'), 20, replace=TRUE)
-#' NUs(eb_data)
+#' Radial_plot(data = eb_data, analysis = FCs)
 #' 
-#'@export NUs
-NUs <- function(data) {
-  if (!requireNamespace("stats", quietly = TRUE)) {
-    stop("Package \"stats\" needed for this function to work. Please install it.",
+#' @export Radial_plot
+Radial_plot <- function(data, analysis) {
+  if (!requireNamespace("dplyr", quietly = TRUE)) {
+    stop("Package \"dplyr\" needed for this function to work. Please install it.",
          call. = FALSE)
-  }
-if (!requireNamespace("dplyr", quietly = TRUE)) {
-  stop("Package \"dplyr\" needed for this function to work. Please install it.",
-       call. = FALSE)
   }
   if (!requireNamespace("magrittr", quietly = TRUE)) {
     stop("Package \"magrittr\" needed for this function to work. Please install it.",
          call. = FALSE)
-    }
-
-  NUdata <- NUdataaggr <- NUs <- informant <- sp_name <- NULL # Setting the variables to NULL first, appeasing R CMD check
+  }
+  
+  value <-  meltURdata <- URdata <- URs <- sp_name <- informant <- URps <- NULL # Setting the variables to NULL first, appeasing R CMD check
   
   #add error stops with validate_that
   assertthat::validate_that("informant" %in% colnames(data), msg = "The required column called \"informant\" is missing from your data. Add it.")
@@ -54,21 +49,23 @@ if (!requireNamespace("dplyr", quietly = TRUE)) {
   data_complete<-data[stats::complete.cases(data), ]
   #message about complete cases
   assertthat::see_if(length(data_complete) == length(data), msg = "Some of your observations included \"NA\" and were removed. Consider using \"0\" instead.")
+ 
+  Radial_plot_data <- analysis(data) #create subset-able data
   
-  #create subsettable data
-  NUdata <- data
+  names(Radial_plot_data)[length(names(Radial_plot_data))]<-"value" 
   
-  #Calculate NUs
-    NUdataaggr <- stats::aggregate(dplyr::select(NUdata, -informant, -sp_name),
-        by = list(sp_name = data$sp_name),FUN = sum)
-    
-    NUdataaggr <- NUdataaggr %>% dplyr::mutate_if(is.numeric, ~1 * (. != 0))
-    
-    NUdataaggr$NUs <- NUdataaggr %>% dplyr::select(-sp_name) %>% rowSums()
-    
-    #change sort order
-    NUs <- dplyr::select(NUdataaggr, sp_name, NUs) %>%
-      dplyr::arrange(-NUs) 
-    
-    print(as.data.frame(NUs))
+  Radial_plot <- 
+    ggplot2::ggplot(Radial_plot_data, ggplot2::aes(x = sp_name, y = value, fill = sp_name)) +
+    ggplot2::geom_bar(width = 1, stat = "identity", color = "white") +
+    ggplot2::scale_y_continuous(breaks = 0:nlevels(Radial_plot_data$sp_name), position = "right") +
+    ggplot2::coord_polar() + 
+    ggplot2::theme_minimal() +
+    ggplot2::theme(axis.title.x=ggplot2::element_blank())+
+    ggplot2::theme(axis.title.y=ggplot2::element_blank(),
+                   axis.text.y=ggplot2::element_blank(),
+                   axis.ticks.y=ggplot2::element_blank())+
+    ggplot2::geom_text(ggplot2::aes(label=value), position=ggplot2::position_dodge(width=0.9), vjust=-0.25)+
+    ggplot2::theme(legend.position = "none") 
+  
+  print(Radial_plot)
 }

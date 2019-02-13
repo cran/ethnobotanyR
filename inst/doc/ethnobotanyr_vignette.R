@@ -6,32 +6,39 @@ knitr::opts_chunk$set(
 
 load("ethnobotanydata.rda")
 
+
 ## ---- echo= FALSE--------------------------------------------------------
 knitr::kable(head(ethnobotanydata), digits = 2, caption = "First six rows of the example ethnobotany data included with ethnobotanyR")
 
 ## ------------------------------------------------------------------------
 ethnobotanyR::URs(ethnobotanydata)
 
+## ---- output_format = 'style="border:none"'------------------------------
+ethnobotanyR::Radial_plot(ethnobotanydata, ethnobotanyR::URs)
+
 ## ------------------------------------------------------------------------
 ethnobotanyR::URsum(ethnobotanydata)
 
 ## ------------------------------------------------------------------------
-ethnobotanyR::CIs(ethnobotanydata)
+ethnobotanyR::Radial_plot(ethnobotanydata, ethnobotanyR::CIs)
 
 ## ------------------------------------------------------------------------
-ethnobotanyR::FCs(ethnobotanydata)
+ethnobotanyR::Radial_plot(ethnobotanydata, ethnobotanyR::FCs)
 
 ## ------------------------------------------------------------------------
-ethnobotanyR::NUs(ethnobotanydata)
+ethnobotanyR::Radial_plot(ethnobotanydata, ethnobotanyR::NUs)
 
 ## ------------------------------------------------------------------------
-ethnobotanyR::RFCs(ethnobotanydata)
+ethnobotanyR::Radial_plot(ethnobotanydata, ethnobotanyR::RFCs)
 
 ## ------------------------------------------------------------------------
-ethnobotanyR::RIs(ethnobotanydata)
+ethnobotanyR::Radial_plot(ethnobotanydata, ethnobotanyR::RIs)
 
 ## ------------------------------------------------------------------------
-ethnobotanyR::UVs(ethnobotanydata)
+ethnobotanyR::Radial_plot(ethnobotanydata, ethnobotanyR::UVs)
+
+## ------------------------------------------------------------------------
+ethnobotanyR::FLs(ethnobotanydata)
 
 ## ---- fig.width=7, fig.height=7------------------------------------------
 ethnobotanyR::ethnoChord(ethnobotanydata)

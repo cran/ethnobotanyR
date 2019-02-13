@@ -1,28 +1,39 @@
 
 #' Frequency of citation (FC)
 #'
-#' This function allows you to calculate the frequency of citation (FC) per species.
+#' Allows users to calculate the frequency of citation (FC) per species.
 #' 
 #' @param data is an ethnobotany data set with column 1 'informant' and 2 'sp_name' as row identifiers of informants and of species names respectively.
 #' The rest of the columns are the identified ethnobotany use categories. The data should be populated with counts of uses per person (should be 0 or 1 values).
 #' @keywords quantitative ethnobotany, number of uses
 #' 
 #' @importFrom magrittr %>%
-#' @importFrom plyr ddply 
-#' @importFrom plyr summarise 
+#' @importFrom dplyr filter summarize select left_join group_by 
 #' @importFrom assertthat validate_that
 #' @importFrom assertthat see_if
 #' 
 #' @examples
 #' 
+#' #Use built-in ethnobotany data example
 #' FCs(ethnobotanydata)
 #' 
+#' #Generate random dataset of three informants uses for four species
+#' eb_data <- data.frame(replicate(10,sample(0:1,20,rep=TRUE)))
+#' names(eb_data) <- gsub(x = names(eb_data), pattern = "X", replacement = "Use_")  
+#' eb_data$informant<-sample(c('User_1', 'User_2', 'User_3'), 20, replace=TRUE)
+#' eb_data$sp_name<-sample(c('sp_1', 'sp_2', 'sp_3', 'sp_4'), 20, replace=TRUE)
+#' FCs(eb_data)
+#'
 #'@export FCs
 FCs <- function(data) {
-    if (!requireNamespace("plyr", quietly = TRUE)) {
-        stop("Package \"plyr\" needed for this function to work. Please install it.",
+    if (!requireNamespace("dplyr", quietly = TRUE)) {
+        stop("Package \"dplyr\" needed for this function to work. Please install it.",
             call. = FALSE)
     }
+  if (!requireNamespace("magrittr", quietly = TRUE)) {
+    stop("Package \"magrittr\" needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
   
   FCps <- sp_name <- informant <- FCdata <- FCs <- NULL # Setting the variables to NULL first, appeasing R CMD check
   
@@ -41,15 +52,14 @@ FCs <- function(data) {
   assertthat::see_if(length(data_complete) == length(data), msg = "Some of your observations included \"NA\" and were removed. Consider using \"0\" instead.")
   
   FCdata <- data #create subset-able data
+  
   FCdata$FCps <- dplyr::select(FCdata, -informant, -sp_name) %>% rowSums()
-  FCdata$FCps[FCdata$FCps > 0] <- 1
-    FCs <- plyr::ddply(FCdata, ~sp_name, plyr::summarise,
-        FCs = sum(FCps))
+  FCdata <- FCdata %>% dplyr::mutate_if(is.numeric, ~1 * (. != 0))
+    FCs <- FCdata %>% 
+      dplyr::group_by(sp_name) %>% 
+      dplyr::summarize(FCs = sum(FCps))%>%
+      dplyr::arrange(-FCs) 
     
-    #change sort order
-    FCs <- FCs[order(-FCs$FCs),] 
-    
-    print("Frequency of citation (FC) for each species in the data set")
-    print(FCs)
+    print(as.data.frame(FCs))
 }
 

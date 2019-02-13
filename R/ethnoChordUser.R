@@ -7,20 +7,24 @@
 #' 
 #' @importFrom magrittr %>%
 #' @importFrom reshape melt
-#' @importFrom dplyr filter 
-#' @importFrom dplyr select 
-#' @importFrom circlize chordDiagram
-#' @importFrom circlize circos.text 
-#' @importFrom circlize get.cell.meta.data
+#' @importFrom dplyr filter select 
+#' @importFrom circlize chordDiagram  circos.text  get.cell.meta.data
 #' @importFrom graphics strwidth
-#' @importFrom assertthat validate_that
-#' @importFrom assertthat see_if
+#' @importFrom assertthat validate_that see_if
 #' 
 #' @keywords ethnobotany, cultural value, use report
 #'
 #' @examples
 #' 
+#' #Use built-in ethnobotany data example
 #' ethnoChordUser(ethnobotanydata)
+#' 
+#' #Generate random dataset of three informants uses for four species
+#' eb_data <- data.frame(replicate(10,sample(0:1,20,rep=TRUE)))
+#' names(eb_data) <- gsub(x = names(eb_data), pattern = "X", replacement = "Use_")  
+#' eb_data$informant<-sample(c('User_1', 'User_2', 'User_3'), 20, replace=TRUE)
+#' eb_data$sp_name<-sample(c('sp_1', 'sp_2', 'sp_3', 'sp_4'), 20, replace=TRUE)
+#' ethnoChordUser(eb_data)
 #' 
 #' @export ethnoChordUser
 ethnoChordUser <- function(data) {
@@ -36,8 +40,12 @@ ethnoChordUser <- function(data) {
     stop("Package \"dplyr\" needed for this function to work. Please install it.",
          call. = FALSE)
   }
+  if (!requireNamespace("magrittr", quietly = TRUE)) {
+    stop("Package \"magrittr\" needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
   
-  sp_name <- informant <- value <- strwidth <- NULL # Setting the variables to NULL first, appeasing R CMD check
+  mat <- sp_name <- informant <- value <- strwidth <- NULL # Setting the variables to NULL first, appeasing R CMD check
   
   #add error stops with validate_that
   assertthat::validate_that("informant" %in% colnames(data), msg = "The required column called \"informant\" is missing from your data. Add it.")
@@ -54,7 +62,8 @@ ethnoChordUser <- function(data) {
   assertthat::see_if(length(data_complete) == length(data), msg = "Some of your observations included \"NA\" and were removed. Consider using \"0\" instead.")
   
   #Melt ethnobotany data
-  mat<- reshape::melt(data, id=c("informant","sp_name")) %>% dplyr::filter(value >=1) %>% dplyr::select(1,3) 
+  mat<- reshape::melt(data, id=c("informant","sp_name")) %>% dplyr::filter(value >=1)%>%
+    dplyr::arrange(dplyr::desc(sp_name)) %>% dplyr::arrange(dplyr::desc(informant)) %>% dplyr::select(1,3) 
     
   #Create chord plot
   
