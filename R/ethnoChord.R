@@ -1,6 +1,6 @@
-#' Create a chord diagram of ethnobotany uses and species
+#' Chord diagram of ethnobotany uses and species
 #'
-#' This function allows you to create a chord diagram of species and uses for ethnobotany studies.
+#' Creates a chord diagram of species and uses for ethnobotany studies.
 #' @source Whitney, C. W., Bahati, J., and Gebauer, J. (2018), Ethnobotany and agrobiodiversity; valuation of plants in the homegardens of southwestern Uganda. Ethnobiology Letters, 9(2), 90-100. <https://doi.org/10.14237/ebl.9.2.2018.503>
 #' @param data is an ethnobotany data set with column 1 'informant' and 2 'sp_name' as row identifiers of informants and of species names respectively.
 #' The rest of the columns are the identified ethnobotany use categories. The data should be populated with counts of uses per person (should be 0 or 1 values).
@@ -14,8 +14,9 @@
 #' @importFrom graphics strwidth
 #' @importFrom assertthat validate_that
 #' @importFrom assertthat see_if
+#' @importFrom cowplot plot_grid
 #' 
-#' @keywords ethnobotany, cultural value, use report
+#' @keywords quantitative ethnobotany cultural value use report chord diagram
 #'
 #' @examples
 #' 
@@ -87,5 +88,5 @@ ethnoChord <- function(data) {
     }
   }, bg.border = NA)
   
-    print("Chord diagram for each use related to each species in the data set")
+    print("Chord diagram for each use (top half) related to each species (bottom half) in the data set")
 }

@@ -2,9 +2,9 @@
 % Please edit documentation in R/FLs.R
 \name{FLs}
 \alias{FLs}
-\title{Calculate the fidelity level (FL) of species uses in ethnobotany studies}
+\title{Fidelity Level (FL)}
 \source{
-Friedman, J., Yaniv, Z., Dafni, A., Palewitch, D., 1986. A preliminary classification of the healing potential of medicinal plants, based on a rational analysis of an ethnopharmacological field survey among Bedouins in the Negev Desert, Israel. Journal of Ethnopharmacology 16, 275-287. <https://www.ncbi.nlm.nih.gov/pubmed/3747566>
+Friedman, J., Yaniv, Z., Dafni, A., Palewitch, D., 1986. A preliminary classification of the healing potential of medicinal plants, based on a rational analysis of an ethnopharmacological field survey among Bedouins in the Negev Desert, Israel. Journal of Ethnopharmacology 16, 275-287.
 }
 \usage{
 FLs(data)
@@ -14,24 +14,26 @@ FLs(data)
 The rest of the columns are the identified ethnobotany use categories. The data should be populated with counts of uses per person (should be 0 or 1 values).}
 }
 \description{
-Allows users to calculate the fidelity level (FL) of species in ethnobotany studies.
+Calculates the fidelity level (FL) of species uses,  i.e. the ratio between the number of informants who independently cite the use of a species for the same major purposes (URs) and the total number of informants who mentioned the plant for any use (FCs).
 }
 \examples{
 
 #Use built-in ethnobotany data example
 FLs(ethnobotanydata)
+#returns the primary use category (Primary.use) and the FLs value
 
 #Generate random dataset of three informants uses for four species
 eb_data <- data.frame(replicate(10,sample(0:1,20,rep=TRUE)))
 names(eb_data) <- gsub(x = names(eb_data), pattern = "X", replacement = "Use_")  
 eb_data$informant<-sample(c('User_1', 'User_2', 'User_3'), 20, replace=TRUE)
 eb_data$sp_name<-sample(c('sp_1', 'sp_2', 'sp_3', 'sp_4'), 20, replace=TRUE)
+
 FLs(eb_data)
 
 }
 \keyword{cultural}
-\keyword{ethnobotany,}
+\keyword{ethnobotany}
 \keyword{fidelity}
-\keyword{report,}
+\keyword{report}
 \keyword{use}
-\keyword{value,}
+\keyword{value}

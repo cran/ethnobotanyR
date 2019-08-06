@@ -1,6 +1,6 @@
 #' Cultural Importance index (CI)
 #'
-#' This function allows you to calculate the Cultural Importance Index (CI) per species.
+#' Calculates the Cultural Importance Index (CI) per species.
 #' @source Tardio, J., and M. Pardo-de-Santayana, 2008. Cultural Importance Indices: A Comparative Analysis Based on the Useful Wild Plants of Southern Cantabria (Northern Spain) 1. Economic Botany, 62(1), 24-39. <https://doi.org/10.1007/s12231-007-9004-5>
 #' @param data is an ethnobotany data set with column 1 'informant' and 2 'sp_name' as row identifiers of informants and of species names respectively.
 #' The rest of the columns are the identified ethnobotany use categories. The data should be populated with counts of uses per person (should be 0 or 1 values).
@@ -50,7 +50,7 @@ CIs <- function(data) {
   #message about complete cases
   assertthat::see_if(length(data_complete) == length(data), msg = "Some of your observations included \"NA\" and were removed. Consider using \"0\" instead.")
   
-  URdata<- data #create subset-able data
+  URdata<- data_complete #create complete subset-able data
   
   #calculate URs
   URdata$URps <- dplyr::select(URdata, -informant, -sp_name) %>% rowSums()
@@ -64,10 +64,10 @@ CIs <- function(data) {
     data_Ci$CI <- data_URs$URs/(length(unique(URdata$informant)) *
         ncol(dplyr::select(URdata, -informant, -sp_name)))
     
-    #change sort order, arragne and round
+    #change sort order, arrange and round
     CIs <- data_Ci %>% dplyr::select(-URs) %>%
       dplyr::arrange(-CI) %>%
-      dplyr::mutate(CI = round(CI, 4))
+      dplyr::mutate(CI = round(CI, 3))
     
-    print(as.data.frame(CIs))
+    as.data.frame(CIs)
 }

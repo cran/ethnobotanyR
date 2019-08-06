@@ -1,31 +1,29 @@
-#' Radial bar plot of use reports (UR) per species
+#' Cultural Value of ethnospecies (CVe)
 #'
-#' Creates a radial bar plot of use reports (UR) per species based on the `UR function`.
+#' Calculates the Cultural Value (CVe) per ethnospecies.
+#' @source Reyes-Garcia, V., T. Huanca, V. Vadez, and W. Leonard. “Cultural, Practical, and Economic Value of Wild Plants: A Quantitative Study in the Bolivian Amazon.” Economic Botany, 2006. <https://doi.org/10.2307/4257061>
 #' @param data is an ethnobotany data set with column 1 'informant' and 2 'sp_name' as row identifiers of informants and of species names respectively.
-#' The rest of the columns are the identified ethnobotany use categories. The data should be populated with counts of uses per person (should be 0 or 1 values).
-#' @param analysis is one of the quantitative ethnobotany functions from ethnobotanyR, i.e. ethnobotanyR::FCs.
-#' @keywords ethnobotany visualuzation radial bar plot
+#' @keywords quantitative ethnobotany cultural importance
 #'
 #' @importFrom magrittr %>%
-#' @importFrom dplyr filter summarize select left_join group_by 
+#' @importFrom dplyr filter summarize select left_join group_by arrange count_ bind_cols
 #' @importFrom assertthat validate_that see_if
-#' @importFrom ggplot2 ggplot aes geom_bar coord_polar theme_minimal geom_bar scale_y_continuous
-#' @importFrom cowplot plot_grid
-#'  
+#' 
 #' @examples
 #' 
-#' #Use built-in ethnobotany data example and Frequency of Citation function FCs()
-#' Radial_plot(ethnobotanydata, analysis = FCs)
+#' #Use built-in ethnobotany data example
+#' CVe(ethnobotanydata)
 #' 
 #' #Generate random dataset of three informants uses for four species
 #' eb_data <- data.frame(replicate(10,sample(0:1,20,rep=TRUE)))
 #' names(eb_data) <- gsub(x = names(eb_data), pattern = "X", replacement = "Use_")  
 #' eb_data$informant<-sample(c('User_1', 'User_2', 'User_3'), 20, replace=TRUE)
 #' eb_data$sp_name<-sample(c('sp_1', 'sp_2', 'sp_3', 'sp_4'), 20, replace=TRUE)
-#' Radial_plot(data = eb_data, analysis = FCs)
-#' 
-#' @export Radial_plot
-Radial_plot <- function(data, analysis) {
+#' CVe(eb_data)
+#'
+#'@export CVe
+#'
+CVe <- function(data) {
   if (!requireNamespace("dplyr", quietly = TRUE)) {
     stop("Package \"dplyr\" needed for this function to work. Please install it.",
          call. = FALSE)
@@ -35,7 +33,7 @@ Radial_plot <- function(data, analysis) {
          call. = FALSE)
   }
   
-  value <-  meltURdata <- URdata <- URs <- sp_name <- informant <- URps <- NULL # Setting the variables to NULL first, appeasing R CMD check
+  CVe <- FCs <- UR_UN_FC <- CVe <- URdata  <- data_Ci <- data_URs <- URps <- sp_name <- informant <- NULL # Setting the variables to NULL first, appeasing R CMD check
   
   #add error stops with validate_that
   assertthat::validate_that("informant" %in% colnames(data), msg = "The required column called \"informant\" is missing from your data. Add it.")
@@ -50,23 +48,40 @@ Radial_plot <- function(data, analysis) {
   data_complete<-data[stats::complete.cases(data), ]
   #message about complete cases
   assertthat::see_if(length(data_complete) == length(data), msg = "Some of your observations included \"NA\" and were removed. Consider using \"0\" instead.")
- 
-  Radial_plot_data <- analysis(data) #create subset-able data
   
-  names(Radial_plot_data)[length(names(Radial_plot_data))]<-"value" 
+  URdata <- data_complete #create complete subset-able data
   
-  Radial_plot <- 
-    ggplot2::ggplot(Radial_plot_data, ggplot2::aes(x = sp_name, y = value, fill = sp_name)) +
-    ggplot2::geom_bar(width = 1, stat = "identity", color = "white") +
-    ggplot2::scale_y_continuous(breaks = 0:nlevels(Radial_plot_data$sp_name), position = "right") +
-    ggplot2::coord_polar() + 
-    ggplot2::theme_minimal() +
-    ggplot2::theme(axis.title.x=ggplot2::element_blank())+
-    ggplot2::theme(axis.title.y=ggplot2::element_blank(),
-                   axis.text.y=ggplot2::element_blank(),
-                   axis.ticks.y=ggplot2::element_blank())+
-    ggplot2::geom_text(ggplot2::aes(label=value), position=ggplot2::position_dodge(width=0.9), vjust=-0.25)+
-    ggplot2::theme(legend.position = "none") 
+  #calcualte Use Reports per species 
+  #same as function URs()
+  URS <- URs(URdata)
   
-  Radial_plot
+  #Uce is the total number of uses reported for ethnospecies e 
+  #same as function NUs()
+  NUS<-NUs(URdata)
+  #divided by the potential uses of an ethnospecies in the study
+  NUS$Uce <- NUS$NUs/ncol(dplyr::select(URdata, -informant, -sp_name))
+  
+  #Ice expresses the number of participants who 
+  #listed the ethnospecies e as useful
+  #Same as function FCs()
+  FCS<-FCs(URdata)
+  
+  #divided by the total number of people (n) 
+  FCS$Ice <- FCS$FCs/sum(dplyr::count_(URdata, vars=informant))
+  
+  #bind the three data sets 
+  UR_UN_FC <- dplyr::bind_cols(NUS, URS, FCS)
+  
+  #IUce expresses the number of participants who mentioned 
+  #each use of the ethnospecies e (also URs)
+  #divided by the total number of participants 
+  UR_UN_FC$IUce <- UR_UN_FC$URs/sum(dplyr::count_(URdata, vars=informant))
+  
+  #calcualte CVe = Uce * Ice*EIUce
+  UR_UN_FC$CVe <- UR_UN_FC$Uce * UR_UN_FC$Ice * sum(UR_UN_FC$IUce)
+    
+  CVe <- dplyr::select(UR_UN_FC, sp_name, CVe) %>%
+    dplyr::arrange(-CVe) 
+  
+  as.data.frame(CVe)
 }

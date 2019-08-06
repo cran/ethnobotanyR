@@ -14,7 +14,7 @@ RFCs(data)
 The rest of the columns are the identified ethnobotany use categories. The data should be populated with counts of uses per person (should be 0 or 1 values).}
 }
 \description{
-Allows users to calculate the relative frequency of citation (RFC) per species published by Pardo-de-Santayana (2003).
+Calculates the relative frequency of citation (RFC) per species published by Pardo-de-Santayana (2003).
 }
 \examples{
 
@@ -29,8 +29,8 @@ eb_data$sp_name<-sample(c('sp_1', 'sp_2', 'sp_3', 'sp_4'), 20, replace=TRUE)
 RFCs(eb_data)
 
 }
-\keyword{ethnobotany,}
-\keyword{number}
-\keyword{of}
+\keyword{citation}
+\keyword{ethnobotany}
+\keyword{frequency}
 \keyword{quantitative}
-\keyword{uses}
+\keyword{relative}

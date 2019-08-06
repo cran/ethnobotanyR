@@ -3,6 +3,9 @@
 \name{NUs}
 \alias{NUs}
 \title{Number of Uses (NU)}
+\source{
+Prance, G. T., W. Baleé, B. M. Boom, and R. L. Carneiro. “Quantitative Ethnobotany and the Case for Conservation in Amazonia.” Conservation Biology 1, no. 4 (1987): 296–310.
+}
 \usage{
 NUs(data)
 }
@@ -11,7 +14,7 @@ NUs(data)
 The rest of the columns are the identified ethnobotany use categories. The data should be populated with counts of uses per person (should be 0 or 1 values).}
 }
 \description{
-This function allows you to calculate the number of uses (NU) per species.
+Calculates the number of uses (NU) per species.
 }
 \examples{
 
@@ -26,7 +29,7 @@ eb_data$sp_name<-sample(c('sp_1', 'sp_2', 'sp_3', 'sp_4'), 20, replace=TRUE)
 NUs(eb_data)
 
 }
-\keyword{ethnobotany,}
+\keyword{ethnobotany}
 \keyword{number}
 \keyword{of}
 \keyword{quantitative}

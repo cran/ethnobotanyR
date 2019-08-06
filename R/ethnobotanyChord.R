@@ -1,6 +1,6 @@
-#' Chord diagram of informants and species uses
+#' Chord diagram of ethnobotany uses and species
 #'
-#' Creates a chord diagram of informants and species uses for ethnobotany studies.
+#' Creates a chord diagram of species and uses for ethnobotany studies.
 #' @source Whitney, C. W., Bahati, J., and Gebauer, J. (2018), Ethnobotany and agrobiodiversity; valuation of plants in the homegardens of southwestern Uganda. Ethnobiology Letters, 9(2), 90-100. <https://doi.org/10.14237/ebl.9.2.2018.503>
 #' @param data is an ethnobotany data set with column 1 'informant' and 2 'sp_name' as row identifiers of informants and of species names respectively.
 #' The rest of the columns are the identified ethnobotany use categories. The data should be populated with counts of uses per person (should be 0 or 1 values).
@@ -8,26 +8,29 @@
 #' @importFrom magrittr %>%
 #' @importFrom reshape melt
 #' @importFrom dplyr filter select 
-#' @importFrom circlize chordDiagram  circos.text  get.cell.meta.data
+#' @importFrom circlize chordDiagram
+#' @importFrom circlize circos.text 
+#' @importFrom circlize get.cell.meta.data
 #' @importFrom graphics strwidth
-#' @importFrom assertthat validate_that see_if
+#' @importFrom assertthat validate_that
+#' @importFrom assertthat see_if
 #' 
-#' @keywords quantitative ethnobotany cultural value use report chord diagram
+#' @keywords ethnobotany
 #'
 #' @examples
 #' 
 #' #Use built-in ethnobotany data example
-#' ethnoChordUser(ethnobotanydata)
+#' ethnobotanyChord(ethnobotanydata)
 #' 
 #' #Generate random dataset of three informants uses for four species
 #' eb_data <- data.frame(replicate(10,sample(0:1,20,rep=TRUE)))
 #' names(eb_data) <- gsub(x = names(eb_data), pattern = "X", replacement = "Use_")  
 #' eb_data$informant<-sample(c('User_1', 'User_2', 'User_3'), 20, replace=TRUE)
 #' eb_data$sp_name<-sample(c('sp_1', 'sp_2', 'sp_3', 'sp_4'), 20, replace=TRUE)
-#' ethnoChordUser(eb_data)
+#' ethnobotanyChord(eb_data)
 #' 
-#' @export ethnoChordUser
-ethnoChordUser <- function(data) {
+#' @export ethnobotanyChord
+ethnobotanyChord <- function(data) {
     if (!requireNamespace("reshape", quietly = TRUE)) {
         stop("Package \"reshape\" needed for this function to work. Please install it.",
             call. = FALSE)
@@ -45,7 +48,7 @@ ethnoChordUser <- function(data) {
          call. = FALSE)
   }
   
-  mat <- sp_name <- informant <- value <- strwidth <- NULL # Setting the variables to NULL first, appeasing R CMD check
+  sp_name <- informant <- value <- strwidth <- NULL # Setting the variables to NULL first, appeasing R CMD check
   
   #add error stops with validate_that
   assertthat::validate_that("informant" %in% colnames(data), msg = "The required column called \"informant\" is missing from your data. Add it.")
@@ -62,9 +65,9 @@ ethnoChordUser <- function(data) {
   assertthat::see_if(length(data_complete) == length(data), msg = "Some of your observations included \"NA\" and were removed. Consider using \"0\" instead.")
   
   #Melt ethnobotany data
-  mat<- reshape::melt(data, id=c("informant","sp_name")) %>% dplyr::filter(value >=1)%>%
-    dplyr::arrange(dplyr::desc(sp_name)) %>% dplyr::arrange(dplyr::desc(informant)) %>% dplyr::select(1,3) 
-    
+  mat <- reshape::melt(data, id=c("informant","sp_name")) %>% dplyr::filter(value >=1)%>%
+   dplyr::arrange(dplyr::desc(informant)) %>%  dplyr::arrange(dplyr::desc(sp_name)) %>% dplyr::select(2:3)
+  
   #Create chord plot
   
   circlize::chordDiagram(mat, annotationTrack = "grid", 
@@ -84,5 +87,5 @@ ethnoChordUser <- function(data) {
     }
   }, bg.border = NA)
   
-    print("Chord diagram for each use (top half) related to each informant (bottom half) in the data set")
+    print("Chord diagram for each use (top half) related to each species (bottom half) in the data set")
 }

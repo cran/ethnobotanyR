@@ -2,7 +2,7 @@
 % Please edit documentation in R/ethnoChordUser.R
 \name{ethnoChordUser}
 \alias{ethnoChordUser}
-\title{Create a chord diagram of informants and species uses}
+\title{Chord diagram of informants and species uses}
 \source{
 Whitney, C. W., Bahati, J., and Gebauer, J. (2018), Ethnobotany and agrobiodiversity; valuation of plants in the homegardens of southwestern Uganda. Ethnobiology Letters, 9(2), 90-100. <https://doi.org/10.14237/ebl.9.2.2018.503>
 }
@@ -14,7 +14,7 @@ ethnoChordUser(data)
 The rest of the columns are the identified ethnobotany use categories. The data should be populated with counts of uses per person (should be 0 or 1 values).}
 }
 \description{
-This function allows you to create a chord diagram of informants and species uses for ethnobotany studies.
+Creates a chord diagram of informants and species uses for ethnobotany studies.
 }
 \examples{
 
@@ -29,8 +29,11 @@ eb_data$sp_name<-sample(c('sp_1', 'sp_2', 'sp_3', 'sp_4'), 20, replace=TRUE)
 ethnoChordUser(eb_data)
 
 }
+\keyword{chord}
 \keyword{cultural}
-\keyword{ethnobotany,}
+\keyword{diagram}
+\keyword{ethnobotany}
+\keyword{quantitative}
 \keyword{report}
 \keyword{use}
-\keyword{value,}
+\keyword{value}

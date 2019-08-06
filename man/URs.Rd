@@ -2,7 +2,10 @@
 % Please edit documentation in R/URs.R
 \name{URs}
 \alias{URs}
-\title{Calculate the use reports (UR) per species}
+\title{Use Report (UR)}
+\source{
+Prance, G. T., W. Baleé, B. M. Boom, and R. L. Carneiro. “Quantitative Ethnobotany and the Case for Conservation in Amazonia.” Conservation Biology 1, no. 4 (1987): 296–310.
+}
 \usage{
 URs(data)
 }
@@ -11,7 +14,7 @@ URs(data)
 The rest of the columns are the identified ethnobotany use categories. The data should be populated with counts of uses per person (should be 0 or 1 values).}
 }
 \description{
-Allows users to calculate the use reports (UR) per secies, a common metric for ethnobotany studies.
+Calculates the use reports (UR) per species, a common metric for ethnobotany studies.
 }
 \examples{
 
@@ -27,7 +30,8 @@ URs(eb_data)
 
 }
 \keyword{cultural}
-\keyword{ethnobotany,}
+\keyword{ethnobotany}
+\keyword{quantitative}
 \keyword{report}
 \keyword{use}
-\keyword{value,}
+\keyword{value}
