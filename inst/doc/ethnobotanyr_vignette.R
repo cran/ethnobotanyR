@@ -61,11 +61,9 @@ cowplot::plot_grid(URs_plot, NUs_plot, FCs_plot, CIs_plot,
     align="hv",
     label_size = 12)
 
-
+## ---- fig.width=7, fig.height=7------------------------------------------
+Chord_sp <- ethnobotanyR::ethnoChord(ethnobotanydata, by = "sp_name")
 
 ## ---- fig.width=7, fig.height=7------------------------------------------
-ethnobotanyR::ethnoChord(ethnobotanydata)
-
-## ---- fig.width=7, fig.height=7------------------------------------------
-ethnobotanyR::ethnoChordUser(ethnobotanydata)
+Chord_informant <- ethnobotanyR::ethnoChord(ethnobotanydata, by = "informant")
 
