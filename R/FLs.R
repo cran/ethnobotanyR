@@ -1,7 +1,11 @@
 #' Fidelity Level (FL)
 #' 
-#' Calculates the fidelity level (FL) of species uses,  i.e. the ratio between the number of informants who independently cite the use of a species for the same major purposes (URs) and the total number of informants who mentioned the plant for any use (FCs). 
-#' @source Friedman, J., Z. Yaniv, A. Dafni, and D. Palewitch. 1986. “A Preliminary Classification of the Healing Potential of Medicinal Plants, Based on a Rational Analysis of an Ethnopharmacological Field Survey Among Bedouins in the Negev Desert, Israel.” Journal of Ethnopharmacology 16 (2-3): 275–87.
+#' Calculates the fidelity level (FL) of the various uses of a species,  i.e. the ratio between the number of informants who independently cite the use of a species for the same purposes (URs) and the total number of informants who mentioned the plant for any use (FCs). 
+#' @usage FLs(data)
+#' 
+#' @references  
+#' Friedman, J., Z. Yaniv, A. Dafni, and D. Palewitch. 1986. “A Preliminary Classification of the Healing Potential of Medicinal Plants, Based on a Rational Analysis of an Ethnopharmacological Field Survey Among Bedouins in the Negev Desert, Israel.” Journal of Ethnopharmacology 16 (2-3): 275–87.
+#' 
 #' @param data is an ethnobotany data set with column 1 'informant' and 2 'sp_name' as row identifiers of informants and of species names respectively.
 #' The rest of the columns are the identified ethnobotany use categories. The data should be populated with counts of uses per person (should be 0 or 1 values).
 #' 
@@ -81,21 +85,20 @@ FLs <- function(data) {
 #Ip <- number who cited for same major purpose (UR in highest use category (-ies))
 Ip <- melt_FLS %>% 
    dplyr::group_by(sp_name, variable) %>%
-   dplyr::summarize(Ip = sum(value, na.rm = TRUE)) %>% 
-   dplyr::slice(which.max(Ip))
+   dplyr::summarize(Ip = sum(value, na.rm = TRUE)) 
   
             
 #Bind Ip and Iu data
 FLspdata <- dplyr::left_join(Iu, Ip, by = "sp_name", na.rm = TRUE)
  
  #Calculate FLs = Ip *100 / Iu
- FLspdata$FLs <- FLspdata$Ip * 100 / FLspdata$FCs 
+ FLspdata$FLs <- (FLspdata$Ip*100) / FLspdata$FCs
   
- FLs <- FLspdata %>% dplyr::group_by(sp_name) %>%
+ FLs <- FLspdata %>% dplyr::group_by(sp_name, variable) %>%
    dplyr::rename(Primary.use = variable) %>%
    dplyr::select(-FCs, -Ip) %>%
-   dplyr::arrange(-FLs)%>%
-   dplyr::mutate(FLs = round(FLs, 3))
+   dplyr::arrange(sp_name)%>%
+   dplyr::mutate(FLs = round(FLs, 2))
   
   as.data.frame(FLs)
 }

@@ -1,7 +1,11 @@
 #' Use Value (UV) index per species
 #'
 #' Calculates the use value (UV) index for each species in the data set (see Tardio and Pardo-de-Santayana 2008).
-#' @source Tardio, Javier, and Manuel Pardo-de-Santayana. “Cultural Importance Indices: A Comparative Analysis Based on the Useful Wild Plants of Southern Cantabria (Northern Spain)1.” Economic Botany 62, no. 1 (May 2008): 24–39. <https://doi.org/10.1007/s12231-007-9004-5>
+#' @usage UVs(data)
+#' 
+#' @references  
+#' Tardio, Javier, and Manuel Pardo-de-Santayana. “Cultural Importance Indices: A Comparative Analysis Based on the Useful Wild Plants of Southern Cantabria (Northern Spain)1.” Economic Botany 62, no. 1 (May 2008): 24–39. <https://doi.org/10.1007/s12231-007-9004-5>
+#' 
 #' @param data is an ethnobotany data set with column 1 'informant' and 2 'sp_name' as row identifiers of informants and of species names respectively.
 #' The rest of the columns are the identified ethnobotany use categories. The data should be populated with counts of uses per person (should be 0 or 1 values).
 #' 
@@ -73,12 +77,11 @@ UVs <- function(data) {
   
   data_UV <- data_URs #create new subset-able data for UVs
   
-  #calcualte UV
-  data_UV$UV <- data_URs$URs/sum(dplyr::count_(URdata, vars=informant)) 
-  
   #UV differs from Ci (the CIs function) only in that 
   #it sums UR grouping by informant (the sum of the uses cited by each informant) 
   #then sums all these data 
+  #calcualte UV, c.f.. calcualte CI (UR/N)
+  data_UV$UV <- data_URs$URs/(length(unique(URdata$informant)))
   
   #change sort order, arrange and round
   UVs <- data_UV %>% dplyr::select(-URs) %>%

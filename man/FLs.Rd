@@ -3,9 +3,6 @@
 \name{FLs}
 \alias{FLs}
 \title{Fidelity Level (FL)}
-\source{
-Friedman, J., Z. Yaniv, A. Dafni, and D. Palewitch. 1986. “A Preliminary Classification of the Healing Potential of Medicinal Plants, Based on a Rational Analysis of an Ethnopharmacological Field Survey Among Bedouins in the Negev Desert, Israel.” Journal of Ethnopharmacology 16 (2-3): 275–87.
-}
 \usage{
 FLs(data)
 }
@@ -17,7 +14,7 @@ The rest of the columns are the identified ethnobotany use categories. The data 
 Data frame of species and fidelity level (FL) values.
 }
 \description{
-Calculates the fidelity level (FL) of species uses,  i.e. the ratio between the number of informants who independently cite the use of a species for the same major purposes (URs) and the total number of informants who mentioned the plant for any use (FCs).
+Calculates the fidelity level (FL) of the various uses of a species,  i.e. the ratio between the number of informants who independently cite the use of a species for the same purposes (URs) and the total number of informants who mentioned the plant for any use (FCs).
 }
 \section{Warning}{
 
@@ -41,6 +38,9 @@ eb_data$sp_name <- sample(c('sp_1', 'sp_2', 'sp_3', 'sp_4'), 20, replace=TRUE)
 
 FLs(eb_data)
 
+}
+\references{
+Friedman, J., Z. Yaniv, A. Dafni, and D. Palewitch. 1986. “A Preliminary Classification of the Healing Potential of Medicinal Plants, Based on a Rational Analysis of an Ethnopharmacological Field Survey Among Bedouins in the Negev Desert, Israel.” Journal of Ethnopharmacology 16 (2-3): 275–87.
 }
 \keyword{arith}
 \keyword{logic}
