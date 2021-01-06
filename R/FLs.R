@@ -1,6 +1,10 @@
 #' Fidelity Level (FL)
 #' 
-#' Calculates the fidelity level (FL) of the various uses of a species,  i.e. the ratio between the number of informants who independently cite the use of a species for the same purposes (URs) and the total number of informants who mentioned the plant for any use (FCs). 
+#' Calculates the fidelity level (FL) of the various uses of a species,  
+#' i.e. the ratio between the number of informants who independently cite 
+#' the use of a species for the same purposes (Ns * 100) and the 
+#' total number of informants who mentioned the plant for any use (FCs).  
+#'
 #' @usage FLs(data)
 #' 
 #' @references  
@@ -11,7 +15,7 @@
 #' 
 #' @importFrom dplyr filter summarize select left_join group_by slice
 #' @importFrom magrittr %>%
-#' @importFrom reshape melt
+#' @importFrom reshape2 melt
 #' 
 #' @keywords arith math logic methods misc survey
 #'
@@ -44,8 +48,8 @@ FLs <- function(data) {
   #Add error stops ####
    #Check that packages are loaded
     {
-  if (!requireNamespace("reshape", quietly = TRUE)) {
-    stop("Package \"reshape\" needed for this function to work. Please install it.",
+  if (!requireNamespace("reshape2", quietly = TRUE)) {
+    stop("Package \"reshape2\" needed for this function to work. Please install it.",
          call. = FALSE)
   }
   if (!requireNamespace("dplyr", quietly = TRUE)) {
@@ -78,20 +82,19 @@ FLs <- function(data) {
   
   Iu <- FCs(FLsdata) #calculate Iu, same as FCs()
   
-  melt_FLS<- reshape::melt(FLsdata, id=c("informant","sp_name")) %>% 
+  melt_FLS<- reshape2::melt(FLsdata, id=c("informant","sp_name")) %>% 
     dplyr::filter(value >=1) %>% 
     dplyr::select(-informant) 
   
-#Ip <- number who cited for same major purpose (UR in highest use category (-ies))
+#Ip <- number (N) who cite species (s) for same major purpose (Ns)
 Ip <- melt_FLS %>% 
    dplyr::group_by(sp_name, variable) %>%
    dplyr::summarize(Ip = sum(value, na.rm = TRUE)) 
   
-            
 #Bind Ip and Iu data
 FLspdata <- dplyr::left_join(Iu, Ip, by = "sp_name", na.rm = TRUE)
  
- #Calculate FLs = Ip *100 / Iu
+ #Calculate FLs = Ip * 100 / Iu
  FLspdata$FLs <- (FLspdata$Ip*100) / FLspdata$FCs
   
  FLs <- FLspdata %>% dplyr::group_by(sp_name, variable) %>%

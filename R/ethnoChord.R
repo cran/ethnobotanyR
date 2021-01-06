@@ -6,7 +6,7 @@
 #' @references  
 #' Gu, Zuguang, Lei Gu, Roland Eils, Matthias Schlesner, and Benedikt Brors. “Circlize Implements and Enhances Circular Visualization in R.” Bioinformatics, 2014, 393.
 #' @references  
-#' Whitney, C. W., Bahati, J., and Gebauer, J. (2018), Ethnobotany and agrobiodiversity; valuation of plants in the homegardens of southwestern Uganda. Ethnobiology Letters, 9(2), 90-100. \url{https://doi.org/10.14237/ebl.9.2.2018.503}
+#' Whitney, C. W., Bahati, J., and Gebauer, J. (2018), Ethnobotany and agrobiodiversity; valuation of plants in the homegardens of southwestern Uganda. Ethnobiology Letters, 9(2), 90-100. \doi{10.14237/ebl.9.2.2018.503}
 #' 
 #' @param data is an ethnobotany data set with column 1 'informant' and 2 'sp_name' as row identifiers of informants and of species names respectively.
 #' The rest of the columns are the identified ethnobotany use categories. The data should be populated with counts of uses per person (should be 0 or 1 values).
@@ -26,12 +26,12 @@
 #' @importFrom dplyr filter rename select 
 #' @importFrom graphics strwidth
 #' @importFrom magrittr %>%
-#' @importFrom reshape melt
+#' @importFrom reshape2 melt
 #'
 #' @examples
 #' 
 #' #Use built-in ethnobotany data example
-#' ethnoChord(ethnobotanydata)
+#' ethnoChord(ethnobotanydata, by = "informant")
 #' 
 #' #Generate random dataset of three informants uses for four species
 #' 
@@ -40,7 +40,7 @@
 #' eb_data$informant <- sample(c('User_1', 'User_2', 'User_3'), 20, replace=TRUE)
 #' eb_data$sp_name <- sample(c('sp_1', 'sp_2', 'sp_3', 'sp_4'), 20, replace=TRUE)
 #' 
-#' ethnoChord(eb_data)
+#' ethnoChord(eb_data, by = "informant")
 #' 
 #' @export ethnoChord
 #' 
@@ -49,8 +49,8 @@ ethnoChord <- function(data, by = "sp_name") {
   #Add error stops ####
   #Check that packages are loaded
     {
-  if (!requireNamespace("reshape", quietly = TRUE)) {
-        stop("Package \"reshape\" needed for this function to work. Please install it.",
+  if (!requireNamespace("reshape2", quietly = TRUE)) {
+        stop("Package \"reshape2\" needed for this function to work. Please install it.",
             call. = FALSE)
   }
   
@@ -81,7 +81,7 @@ ethnoChord <- function(data, by = "sp_name") {
   informant <- sp_name <- variable <- value <- strwidth <- NULL 
   
   # Melt ethnobotany data
-  mat <- reshape::melt(data, id=c("informant","sp_name")) %>% 
+  mat <- reshape2::melt(data, id=c("informant","sp_name")) %>% 
     dplyr::filter(value >=1)%>%
     #dplyr::arrange(by) %>%  
     dplyr::arrange(variable) %>% 

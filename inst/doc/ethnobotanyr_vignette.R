@@ -5,7 +5,9 @@ knitr::opts_chunk$set(
 )
 
 load("ethnobotanydata.rda")
+library(dplyr)
 library(ethnobotanyR)
+library(ggalluvial)
 library(ggplot2)
 library(ggridges)
 library(magrittr)
@@ -46,26 +48,6 @@ ethnobotanyR::CVe(ethnobotanydata)
 ## ----FLs----------------------------------------------------------------------
 ethnobotanyR::FLs(ethnobotanydata)
 
-## ----ethno_boot_histograms----------------------------------------------------
-Use_1_boot <- ethno_boot(ethnobotanydata$Use_1, statistic = mean, n1 = 1000, n2 = 100)
-
-Use_2_boot <- ethno_boot(ethnobotanydata$Use_2, statistic = mean, n1 = 1000, n2 = 100)
-
-Use_3_boot <- ethno_boot(ethnobotanydata$Use_3, statistic = mean, n1 = 1000, n2 = 100)
-
-## ----fig.width=7, fig.height=7------------------------------------------------
-boot_data <- data.frame(Use_1_boot, Use_2_boot, Use_3_boot)
-
-ethno_boot_melt <- reshape::melt(boot_data)
-
-## ----plot_boot_ridges, fig.width=7, fig.height=4------------------------------
-ggplot2::ggplot(ethno_boot_melt, aes(x = value, 
-                y = variable, fill = variable)) +
-                ggridges::geom_density_ridges() +
-                ggridges::theme_ridges() + 
-                theme(legend.position = "none") +
-                labs(y= "", x = "Example Bayesian bootstraps of three use categores")
-
 ## ---- fig.width=7, fig.height=7-----------------------------------------------
 URs_plot <- ethnobotanyR::Radial_plot(ethnobotanydata, ethnobotanyR::URs)
 
@@ -87,6 +69,47 @@ Chord_sp <- ethnobotanyR::ethnoChord(ethnobotanydata, by = "sp_name")
 ## ---- fig.width=7, fig.height=7-----------------------------------------------
 Chord_informant <- ethnobotanyR::ethnoChord(ethnobotanydata, by = "informant")
 
+## ---- fig.width=7, fig.height=7-----------------------------------------------
+ethnobotanyR::ethno_alluvial(ethnobotanydata)
+
+## ---- fig.width=7, fig.height=7-----------------------------------------------
+
+# correct internal assignment for stat = "stratum" 
+  StatStratum <- ggalluvial::StatStratum
+
+ethnobotanyR::ethno_alluvial(ethnobotanydata, alpha = 0.2) + 
+  ggplot2::theme(legend.position = "none") +  
+             ggplot2::geom_label(stat = "stratum", 
+                      ggplot2::aes(label = ggplot2::after_stat(stratum)))
+
+
+## ----ethno_boot_uses----------------------------------------------------------
+sp_a_data <- ethnobotanydata %>% filter(sp_name == "sp_a") 
+
+sp_a_use <- ethno_boot(sp_a_data$Use_3, statistic = mean, n1 = 1000)
+
+sp_b_data <- ethnobotanydata %>% filter(sp_name == "sp_b") 
+
+sp_b_use <- ethno_boot(sp_b_data$Use_3, statistic = mean, n1 = 1000)
+
+
+## ----ethno_boot_URs-----------------------------------------------------------
+quantile(sp_a_use, c(0.05, 0.95))
+quantile(sp_b_use, c(0.05, 0.95))
+
+## ----fig.width=7, fig.height=7------------------------------------------------
+boot_data <- data.frame(sp_a_use, sp_b_use)
+
+ethno_boot_melt <- reshape2::melt(boot_data)
+
+## ----plot_boot_ridges, fig.width=7, fig.height=4------------------------------
+ggplot2::ggplot(ethno_boot_melt, aes(x = value, 
+                y = variable, fill = variable)) +
+                ggridges::geom_density_ridges() +
+                ggridges::theme_ridges() + 
+                theme(legend.position = "none") +
+                labs(y= "", x = "Example Bayesian bootstraps of three use categories")
+
 ## ----ethno_sp_a---------------------------------------------------------------
 ethno_sp_a <- dplyr::filter(ethnobotanydata, sp_name == "sp_a")
 
@@ -107,8 +130,8 @@ ethno_compet_sp_a <- dplyr::recode(ethno_sp_a$informant,
 ## ----ethno_sp_a_bayes---------------------------------------------------------
 ethno_sp_a_bayes <- ethnobotanyR::ethno_bayes_consensus(ethno_sp_a, 
                     answers = 2,
-                    prior_for_answers = ethno_compet_sp_a,
-                    prior = -1)
+                    #here we keep the default normal distribution with `prior = -1`
+                    prior_for_answers = ethno_compet_sp_a) 
 
 ## ----heatmap------------------------------------------------------------------
 heatmap(ethno_sp_a_bayes)
@@ -133,12 +156,12 @@ ethno_compet_sp_a_rich <-
 ethno_sp_a_bayes <- ethnobotanyR::ethno_bayes_consensus(ethno_sp_a_rich,
        answers = 10, 
        prior_for_answers = ethno_compet_sp_a_rich, 
-       prior=-1) #keep a normal prior in this example
+       prior=-1) #keep a normal prior in this example with -1
 
 ## ----fig.width=7, fig.height=7------------------------------------------------
-ethno_sp_a_bayes_dat <- as.data.frame(ethno_sp_a_bayes)
-
-ethno_sp_a_bayes_melt <- reshape::melt(ethno_sp_a_bayes_dat)
+ethno_sp_a_bayes_melt <-  ethno_sp_a_bayes %>%
+  as.data.frame() %>%
+  reshape2::melt()
 
 ## ----fig.width=7, fig.height=4------------------------------------------------
 ggplot2::ggplot(ethno_sp_a_bayes_melt, aes(x = value, 
@@ -146,5 +169,5 @@ ggplot2::ggplot(ethno_sp_a_bayes_melt, aes(x = value,
                 ggridges::geom_density_ridges() +
                 ggridges::theme_ridges() + 
                 theme(legend.position = "none")+
-                labs(y= "", x = "Example ethno_bayes_consensus of use categores for sp_a")
+                labs(y= "", x = "Example ethno_bayes_consensus of use categories for sp_a")
 

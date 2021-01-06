@@ -29,7 +29,7 @@ The rest of the columns represent the identified ethnobotany use categories. The
 \examples{
 
 #Use built-in ethnobotany data example
-ethnoChord(ethnobotanydata)
+ethnoChord(ethnobotanydata, by = "informant")
 
 #Generate random dataset of three informants uses for four species
 
@@ -38,13 +38,13 @@ names(eb_data) <- gsub(x = names(eb_data), pattern = "X", replacement = "Use_")
 eb_data$informant <- sample(c('User_1', 'User_2', 'User_3'), 20, replace=TRUE)
 eb_data$sp_name <- sample(c('sp_1', 'sp_2', 'sp_3', 'sp_4'), 20, replace=TRUE)
 
-ethnoChord(eb_data)
+ethnoChord(eb_data, by = "informant")
 
 }
 \references{
 Gu, Zuguang, Lei Gu, Roland Eils, Matthias Schlesner, and Benedikt Brors. “Circlize Implements and Enhances Circular Visualization in R.” Bioinformatics, 2014, 393.
 
-Whitney, C. W., Bahati, J., and Gebauer, J. (2018), Ethnobotany and agrobiodiversity; valuation of plants in the homegardens of southwestern Uganda. Ethnobiology Letters, 9(2), 90-100. \url{https://doi.org/10.14237/ebl.9.2.2018.503}
+Whitney, C. W., Bahati, J., and Gebauer, J. (2018), Ethnobotany and agrobiodiversity; valuation of plants in the homegardens of southwestern Uganda. Ethnobiology Letters, 9(2), 90-100. \doi{10.14237/ebl.9.2.2018.503}
 }
 \keyword{arith}
 \keyword{graphs}

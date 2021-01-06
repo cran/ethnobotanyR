@@ -14,7 +14,9 @@ The rest of the columns are the identified ethnobotany use categories. The data 
 Data frame of species and use value (UV) index results.
 }
 \description{
-Calculates the use value (UV) index for each species in the data set (see Tardio and Pardo-de-Santayana 2008).
+Calculates the use value (UV) index for each species in the data set 
+(see Tardio and Pardo-de-Santayana 2008). 
+This is calculated the same as the \link[ethnobotanyR]{CIs} function.
 }
 \section{Warning}{
 
@@ -39,7 +41,7 @@ UVs(eb_data)
 
 }
 \references{
-Tardio, Javier, and Manuel Pardo-de-Santayana. “Cultural Importance Indices: A Comparative Analysis Based on the Useful Wild Plants of Southern Cantabria (Northern Spain)1.” Economic Botany 62, no. 1 (May 2008): 24–39. <https://doi.org/10.1007/s12231-007-9004-5>
+Tardio, Javier, and Manuel Pardo-de-Santayana. “Cultural Importance Indices: A Comparative Analysis Based on the Useful Wild Plants of Southern Cantabria (Northern Spain)1.” Economic Botany 62, no. 1 (May 2008): 24–39. \doi{10.1007/s12231-007-9004-5}
 }
 \keyword{cultural}
 \keyword{ethnobotany}
