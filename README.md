@@ -2,38 +2,40 @@
 <img src="vignettes/ethnobotanyR.png" alt="ethnobotanyR logo" align="right" width = "25%" height="25%"/>
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
 <!-- badges: start -->
 
 [![CRAN
-Status](http://www.r-pkg.org/badges/version/ethnobotanyR?color=yellow)](https://cran.r-project.org/package=ethnobotanyR)
-[![](http://cranlogs.r-pkg.org/badges/grand-total/ethnobotanyR?color=orange)](https://cran.r-project.org/package=ethnobotanyR)
-[![](http://cranlogs.r-pkg.org/badges/ethnobotanyR?color=blue)](https://cran.r-project.org/package=ethnobotanyR)
-[![](http://cranlogs.r-pkg.org/badges/last-week/ethnobotanyR?color=green)](https://cran.r-project.org/package=ethnobotanyR)
+Status](https://r-pkg.org/badges/version/ethnobotanyR?color=yellow)](https://cran.r-project.org/package=ethnobotanyR)
+[![](https://cranlogs.r-pkg.org/badges/grand-total/ethnobotanyR?color=orange)](https://cran.r-project.org/package=ethnobotanyR)
+[![](https://cranlogs.r-pkg.org/badges/ethnobotanyR?color=blue)](https://cran.r-project.org/package=ethnobotanyR)
+[![](https://cranlogs.r-pkg.org/badges/last-week/ethnobotanyR?color=green)](https://cran.r-project.org/package=ethnobotanyR)
 <!-- badges: end -->
+
+[![“Buy Me A
+Coffee”](https://buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/cwhitney)
 
 # ethnobotanyR
 
-Please remember to cite this package if you use it in your publications.
+Please remember to cite the `ethnobotanyR` package if you use it in your
+publications. Use `citation("ethnobotanyR")` to get a citation for the
+latest version.
 
-``` r
-citation("ethnobotanyR")
-#> 
-#> To cite package 'ethnobotanyR' in publications use:
-#> 
-#>   Cory Whitney (2021). ethnobotanyR: Calculate Quantitative Ethnobotany
-#>   Indices. R package version 0.1.8.
-#>   https://CRAN.R-project.org/package=ethnobotanyR
-#> 
-#> A BibTeX entry for LaTeX users is
-#> 
-#>   @Manual{,
-#>     title = {ethnobotanyR: Calculate Quantitative Ethnobotany Indices},
-#>     author = {Cory Whitney},
-#>     year = {2021},
-#>     note = {R package version 0.1.8},
-#>     url = {https://CRAN.R-project.org/package=ethnobotanyR},
-#>   }
-```
+    To cite package 'ethnobotanyR' in publications use:
+
+      Whitney C (2026). _ethnobotanyR: Ethnobotanical Analysis,
+      Decision-Framing, and TEK Modeling_. R package version 0.2.0,
+      <https://CRAN.R-project.org/package=ethnobotanyR>.
+
+    A BibTeX entry for LaTeX users is
+
+      @Manual{,
+        title = {ethnobotanyR: Ethnobotanical Analysis, Decision-Framing, and TEK Modeling},
+        author = {Cory Whitney},
+        year = {2026},
+        note = {R package version 0.2.0},
+        url = {https://CRAN.R-project.org/package=ethnobotanyR},
+      }
 
 The goal of `ethnobotanyR` is to provide an easy-to-use platform for
 ethnobotanists to work with quantitative ethnobotany assessments. It
@@ -49,12 +51,13 @@ developing meaningful research questions.
 
 <!-- Links: start -->
 
-| Quick Links                                                                                                                                               |
-|:----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [**Installation**](https://github.com/CWWhitney/ethnobotanyR#Installation)                                                                                |
-| [**CRAN Version**](https://cran.r-project.org/package=ethnobotanyR)                                                                                       |
-| [**Working with ethnobotanyR**](http://htmlpreview.github.io/?https://github.com/CWWhitney/ethnobotanyR/blob/master/vignettes/ethnobotanyr_vignette.html) |
-| [**ethnobotanyR Wiki**](https://github.com/CWWhitney/ethnobotanyR/wiki)                                                                                   |
+| Quick Links |
+|:---|
+| [**Installing ethnobotanyR**](https://github.com/CWWhitney/ethnobotanyR#Installation) |
+| [**ethnobotanyR CRAN Version**](https://cran.r-project.org/package=ethnobotanyR) |
+| [**Quantitative ethnobotany analysis with ethnobotanyR**](http://htmlpreview.github.io/?https://github.com/CWWhitney/ethnobotanyR/blob/master/vignettes/ethnobotanyr_vignette.html) |
+| [**Modeling with ethnobotanyR**](https://htmlpreview.github.io/?https://github.com/CWWhitney/ethnobotanyR/blob/master/vignettes/ethnobotanyR_modeling_vignette.html) |
+| [**ethnobotanyR Wiki**](https://github.com/CWWhitney/ethnobotanyR/wiki) |
 
 <!-- Links: end -->
 
@@ -86,3 +89,7 @@ Whitney, C. W., Bahati, J., and Gebauer, J. (2018), Ethnobotany and
 agrobiodiversity; valuation of plants in the homegardens of southwestern
 Uganda. Ethnobiology Letters, 9(2), 90-100.
 [doi.org/10.14237/ebl.9.2.2018.503](https://doi.org/10.14237/ebl.9.2.2018.503).
+
+Whitney C (2022). *ethnobotanyR: Calculate Quantitative Ethnobotany
+Indices*. R package version 0.1.9,
+<https://CRAN.R-project.org/package=ethnobotanyR>.

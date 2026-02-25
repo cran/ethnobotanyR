@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Cory Whitney" />
+
+<meta name="date" content="2026-02-24" />
+
+<title>Modeling with Traditional Ecological Knowledge (TEK): Bayesian Networks and Monte Carlo</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Modeling with Traditional Ecological
+Knowledge (TEK): Bayesian Networks and Monte Carlo</h1>
+<h4 class="author">Cory Whitney</h4>
+<h4 class="date">2026-02-24</h4>
+
+
+
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>This vignette demonstrates how Traditional Ecological Knowledge (TEK)
+can be incorporated into decision models using Bayesian Networks (BNs)
+and Monte Carlo sampling. It is designed as a short tutorial showing
+practical, reproducible code snippets and guidance on eliciting and
+encoding TEK.</p>
+<p>Note: this vignette is both pedagogical and practical. It gives
+worked examples you can run locally. The goal is to show how TEK —
+whether collected as counts (k of n informants), multinomial categories,
+or qualitative rankings (high/med/low) — can be translated into
+probability distributions that feed Bayesian Networks. Monte Carlo
+sampling is then used to propagate TEK-derived uncertainty through the
+BN and produce decision-relevant outcome distributions.</p>
+<p>The examples below include a small simulated TEK dataset embedded in
+the vignette so you can run everything end-to-end. For heavier examples
+you may conditionally skip chunks if packages are not installed (see
+notes in chunks). By default the main code chunks here are enabled so
+the vignette will run in an environment with the required packages
+installed.</p>
+<div id="required-packages" class="section level2">
+<h2>Required packages</h2>
+<p>We will show examples that use the following packages (install if you
+want to run the code):</p>
+<ul>
+<li>bnlearn</li>
+<li>gRain</li>
+<li>dplyr</li>
+<li>ggplot2</li>
+<li>purrr</li>
+</ul>
+<p>You can install them with
+<code>install.packages(c(&quot;bnlearn&quot;,&quot;gRain&quot;,&quot;dplyr&quot;,&quot;ggplot2&quot;,&quot;purrr&quot;))</code></p>
+<hr />
+</div>
+<div id="short-motivation-and-data" class="section level2">
+<h2>1. Short motivation and data</h2>
+<p>We often collect TEK as counts (k informants out of n) or qualitative
+categories (high/medium/low). A convenient approach is to convert counts
+into Beta (binary) or Dirichlet (categorical) priors and then sample
+from these priors inside a Monte Carlo loop to create Conditional
+Probability Tables (CPTs) for a Bayesian Network (BN).</p>
+<p>Below we illustrate the workflow with a tiny, didactic model: a
+management <code>Decision</code> (Harvest vs Conserve), a latent
+<code>Abundance</code> node (High/Low), and an <code>Impact</code> node
+(Recovery/Decline). The goal is to compare management options under TEK
+uncertainty.</p>
+</div>
+<div id="example-encode-tek-as-beta-priors-and-sample-cpts" class="section level2">
+<h2>2. Example: encode TEK as Beta priors and sample CPTs</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Example: create Beta priors from TEK counts (k out of n informants say &#39;harvest causes decline&#39;)</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>tek_k <span class="ot">&lt;-</span> <span class="dv">7</span>   <span class="co"># informants saying &#39;decline&#39;</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>tek_n <span class="ot">&lt;-</span> <span class="dv">10</span>  <span class="co"># total informants</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># Beta posterior (Laplace smoothing): Beta(k+1, n-k+1)</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> tek_k <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>beta  <span class="ot">&lt;-</span> tek_n <span class="sc">-</span> tek_k <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co"># draw Monte Carlo samples for that probability</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>p_samples <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(<span class="dv">1000</span>, alpha, beta)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co"># Inspect distribution</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="fu">qplot</span>(p_samples, <span class="at">geom =</span> <span class="st">&quot;density&quot;</span>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">&quot;TEK-derived prior for P(decline | harvest)&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning: `qplot()` was deprecated in ggplot2 3.4.0.
+## This warning is displayed once per session.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.</code></pre>
+<p><img role="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAYAAAAUg66AAAAEDmlDQ1BrQ0dDb2xvclNwYWNlR2VuZXJpY1JHQgAAOI2NVV1oHFUUPpu5syskzoPUpqaSDv41lLRsUtGE2uj+ZbNt3CyTbLRBkMns3Z1pJjPj/KRpKT4UQRDBqOCT4P9bwSchaqvtiy2itFCiBIMo+ND6R6HSFwnruTOzu5O4a73L3PnmnO9+595z7t4LkLgsW5beJQIsGq4t5dPis8fmxMQ6dMF90A190C0rjpUqlSYBG+PCv9rt7yDG3tf2t/f/Z+uuUEcBiN2F2Kw4yiLiZQD+FcWyXYAEQfvICddi+AnEO2ycIOISw7UAVxieD/Cyz5mRMohfRSwoqoz+xNuIB+cj9loEB3Pw2448NaitKSLLRck2q5pOI9O9g/t/tkXda8Tbg0+PszB9FN8DuPaXKnKW4YcQn1Xk3HSIry5ps8UQ/2W5aQnxIwBdu7yFcgrxPsRjVXu8HOh0qao30cArp9SZZxDfg3h1wTzKxu5E/LUxX5wKdX5SnAzmDx4A4OIqLbB69yMesE1pKojLjVdoNsfyiPi45hZmAn3uLWdpOtfQOaVmikEs7ovj8hFWpz7EV6mel0L9Xy23FMYlPYZenAx0yDB1/PX6dledmQjikjkXCxqMJS9WtfFCyH9XtSekEF+2dH+P4tzITduTygGfv58a5VCTH5PtXD7EFZiNyUDBhHnsFTBgE0SQIA9pfFtgo6cKGuhooeilaKH41eDs38Ip+f4At1Rq/sjr6NEwQqb/I/DQqsLvaFUjvAx+eWirddAJZnAj1DFJL0mSg/gcIpPkMBkhoyCSJ8lTZIxk0TpKDjXHliJzZPO50dR5ASNSnzeLvIvod0HG/mdkmOC0z8VKnzcQ2M/Yz2vKldduXjp9bleLu0ZWn7vWc+l0JGcaai10yNrUnXLP/8Jf59ewX+c3Wgz+B34Df+vbVrc16zTMVgp9um9bxEfzPU5kPqUtVWxhs6OiWTVW+gIfywB9uXi7CGcGW/zk98k/kmvJ95IfJn/j3uQ+4c5zn3Kfcd+AyF3gLnJfcl9xH3OfR2rUee80a+6vo7EK5mmXUdyfQlrYLTwoZIU9wsPCZEtP6BWGhAlhL3p2N6sTjRdduwbHsG9kq32sgBepc+xurLPW4T9URpYGJ3ym4+8zA05u44QjST8ZIoVtu3qE7fWmdn5LPdqvgcZz8Ww8BWJ8X3w0PhQ/wnCDGd+LvlHs8dRy6bLLDuKMaZ20tZrqisPJ5ONiCq8yKhYM5cCgKOu66Lsc0aYOtZdo5QCwezI4wm9J/v0X23mlZXOfBjj8Jzv3WrY5D+CsA9D7aMs2gGfjve8ArD6mePZSeCfEYt8CONWDw8FXTxrPqx/r9Vt4biXeANh8vV7/+/16ffMD1N8AuKD/A/8leAvFY9bLAAAAOGVYSWZNTQAqAAAACAABh2kABAAAAAEAAAAaAAAAAAACoAIABAAAAAEAAAEgoAMABAAAAAEAAAEgAAAAAKtAJY0AAD2ESURBVHgB7Z0J3FbT9se3IbrGSklU0mBIMiVDdItCmTKFuCpTCrnXfE0lklnXLNSflOGiVEqkkIgkc4RIkQZRRJnOf3/3tR/nfXqG877POfs553nW+nze9znDPnut/dv7rLP32nuvtZanSQkJAoKAIFAEBNYuAk9hKQgIAoKAQUAUkDQEQUAQKBoCooCKBr0wFgQEAVFA0gYEAUGgaAiIAioa9MJYEBAERAFJGxAEBIGiIbBu0TjnYPzDDz+oCy64IEeK/92qUaOGuv7669Xw4cPVK6+8kjP9YYcdpg499FCT5o477lBz5sxRt9122xrPfPvtt6p///7q999/V5dddpnaaqut1kiT68LTTz+txo8fr+6++2619tqF6/errrpK1apVS51zzjm52IZ2L2z50wV766231L333qsuueQStc0226TfDu388ccfV48++qhasmSJuvDCC9Xhhx8eWt5kRL6XX355hTyp74033ljVq1dPHX300aphw4YV7tuTSy+9VG299daqV69e9lKFX9penz59VOfOndURRxxR4V6hJ6+99pr6v//7P9WvXz+15ZZbKlf14Zd79OjR6rrrrlPTp09XinVAcaOlS5d69evXr/C31lpreeuvv36Fa7vvvrsR/bTTTmMtk6cBrXDfn8ctt9ySKqauWG/DDTdMndsD+O68887euuuu640cOdJertSvblxGll9//bVSz2VLvOOOO3oHH3xwttuhXw9b/nQB//vf/xp8dONLvxXa+euvv+5pZeDpl9w78cQTvVdffTW0vG1Gn3zyiSmHVjgV2twmm2xirsP/nnvusclTvy+99JJXu3Zt77vvvktdSz/45ZdfTB76A5h+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rqt+++23IOKFkgY7DeXED3Ch1XXVVVepwYMHq/nz5+d1Ou+6nOuss47ij3K6IrBde+21nQ5dqlWrZuox7DbEkJqZzUyLEsGVpReFtp/K1AtrzHDzy5aRbLRuththXmepP/RijpjW1atXT7G0FZS6EODAJbCI45qfhaAQvjw7YsQIs/GUr2WQvIKksbIV+mt52d9C8wv6PPxc8rS87G9QOfOlO/DAA9U555yjFi9ebBYnpqd3XU745yujEwWUDkSmc2JR+Smoq0lWgWJfcjm8q1Gjhlq+fHlecP3lKeSYngjlpIyF9A6IovDll1+q66+/Xn333Xd5RapZs2agdHkzCpgApUg8siCyBcwybzI+dvQuV65cmTdtWAlq1apl2k7Y5WRjKoSd9eijj64gLrjSGwm711WBSdpJvXr18vJzYgNKk0tOi4TAf//7X7XFFluo/fbbr0gSCNsoEahfv75q2rRpouxAooCibBExypuv39ixY9VRRx1lbB4xEk1ECRGB/fff35g6sPckgUQBJaGWQpDx2WefVazDktmvEMCMcRYHHHCA8ZL49ttvx1jKv0RzagNisRR/Qu4RYPjVsmVLte2227pnLhydIYAdiPjxkydPVrvttpszvlVlJD2gqiKXoOcWLVpk/P7IyucEVVoVRcWgjo1v0qRJVczB7WOigNziXRRuTzzxhLH74PdZqPQRYBj27rvvGle7cS+tKKC411AI8rH1okOHDopNi0KljwAKCGIYFncSBRT3GipQvlmzZpmIpxJyp0AgE/Q462923HHHRAzDRAElqGFVRVTcrtauXVvZr2JV8pBnkocA9U20DPxFx5lEAcW5dgqUjbU/rIo95phjFKuphcoHgY4dO5plF6+99lqsCy0KKNbVU5hw48aNM9s3xO1qYTgm8eldd93V2PwIuR1nEgUU59opUDY2nu6xxx6qWbNmBeYkjycNAXb40wsi8GScSRRQnGunANk++eQT9cYbb6iTTjqpgFzk0SQjgALC7cpHH30U22KIAopt1RQm2EMPPaQ23XRTdeihhxaWkTydWARwVo9PnokTJ8a2DKKAYls1VRfsp59+MjG/2PeVyxlU1TnIk0lAgC0ZrIpmH2BcSRRQXGumALmefPJJY3zu3r17AbnIo6WAwMEHH6zeeecd9fXXX8eyOKKAYlkthQn1wAMPmE2/jRs3Liwj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" /><!-- --></p>
+<div id="simulated-informant-dataset-multivariate" class="section level3">
+<h3>Simulated informant dataset (multivariate)</h3>
+<p>Below we create a small simulated TEK survey with 20 informants. Each
+informant provides: - a binary response about whether harvesting causes
+decline (1 = yes, 0 = no), - a categorical assessment of current
+abundance (High/Medium/Low), and - a self-reported confidence score
+(1-5).</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>n_inf <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co"># create a data frame</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>informants <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span>n_inf,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="co"># binomial distribution with parameters n, size and prob</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="at">says_decline =</span> <span class="fu">rbinom</span>(<span class="at">n =</span> n_inf, <span class="at">size =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.6</span>),</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="co"># for abundance, take a sample of the specified size from the elements of x using either with or without replacement.</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  <span class="at">abundance =</span> <span class="fu">sample</span>(<span class="at">x=</span> <span class="fu">c</span>(<span class="st">&quot;High&quot;</span>,<span class="st">&quot;Medium&quot;</span>,<span class="st">&quot;Low&quot;</span>), </span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>                     <span class="at">size =</span> n_inf, </span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>                     <span class="at">replace=</span><span class="cn">TRUE</span>, </span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>                     <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.4</span>,<span class="fl">0.35</span>,<span class="fl">0.25</span>)),</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="co"># take a sample again for confidence</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="at">confidence =</span> <span class="fu">sample</span>(<span class="dv">3</span><span class="sc">:</span><span class="dv">5</span>, </span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>                      <span class="at">size =</span> n_inf, </span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>                      <span class="at">replace=</span><span class="cn">TRUE</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>                      <span class="at">prob=</span><span class="fu">c</span>(<span class="fl">0.2</span>,<span class="fl">0.6</span>,<span class="fl">0.2</span>))</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>)</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(informants, <span class="dv">8</span>))</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">id</th>
+<th align="right">says_decline</th>
+<th align="left">abundance</th>
+<th align="right">confidence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="left">Low</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="left">High</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="left">Low</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="left">Low</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="left">High</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="right">6</td>
+<td align="right">1</td>
+<td align="left">Medium</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="right">7</td>
+<td align="right">0</td>
+<td align="left">High</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="right">8</td>
+<td align="right">1</td>
+<td align="left">Low</td>
+<td align="right">5</td>
+</tr>
+</tbody>
+</table>
+<p>We will use this toy dataset to illustrate three aggregation
+approaches below: simple counts -&gt; Beta/Dirichlet, weighted pooling
+by confidence, and mapping qualitative categories to numerical
+pseudo-counts.</p>
+</div>
+</div>
+<div id="build-a-small-bn-and-run-monte-carlo-parameter-sampling" class="section level2">
+<h2>3. Build a small BN and run Monte Carlo parameter sampling</h2>
+<p>High-level algorithm</p>
+<ol style="list-style-type: decimal">
+<li>Define BN structure (nodes and conditional relationships).</li>
+<li>For each Monte Carlo iteration:
+<ul>
+<li>Sample each uncertain probability from its Beta/Dirichlet
+prior.</li>
+<li>Populate CPTs with the sampled probabilities.</li>
+<li>Compile the BN and query target node probabilities or expected
+utilities.</li>
+</ul></li>
+<li>Aggregate the distribution of outcomes across iterations and compare
+decisions.</li>
+</ol>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">requireNamespace</span>(<span class="st">&quot;bnlearn&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>) <span class="sc">&amp;&amp;</span> <span class="fu">requireNamespace</span>(<span class="st">&quot;gRain&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">library</span>(bnlearn); <span class="fu">library</span>(gRain); <span class="fu">library</span>(purrr)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">&quot;Skipping BN + gRain workflow: &#39;bnlearn&#39; and/or &#39;gRain&#39; not available&quot;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## Loading required package: gRbase</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gRbase&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:bnlearn&#39;:
+## 
+##     ancestors, children, nodes, parents</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># define simple TEK priors (ensure alpha/beta are available during knitting)</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>tek_k <span class="ot">&lt;-</span> <span class="dv">7</span>   <span class="co"># number of informants saying &#39;decline&#39;</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>tek_n <span class="ot">&lt;-</span> <span class="dv">10</span>  <span class="co"># total informants</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> tek_k <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>beta  <span class="ot">&lt;-</span> tek_n <span class="sc">-</span> tek_k <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co"># define structure</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>model_string <span class="ot">&lt;-</span> <span class="st">&quot;[Decision][Abundance|Decision][Impact|Abundance:Decision]&quot;</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>net <span class="ot">&lt;-</span> <span class="fu">model2network</span>(model_string)</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co"># a single Monte Carlo iteration (pseudo-code)</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>sample_one <span class="ot">&lt;-</span> <span class="cf">function</span>(){</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>  <span class="co"># sample p(Abundance=Low | Decision=Harvest) from TEK-derived Beta</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>  p_decline_if_harvest <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(<span class="dv">1</span>, alpha, beta)</span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>  <span class="co"># create CPTs (values must be in the order expected by gRain)</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>  <span class="co"># Example CPTs (toy values)</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>  cpt_decision <span class="ot">&lt;-</span> <span class="fu">cptable</span>(<span class="sc">~</span>Decision, <span class="at">values=</span><span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fl">0.5</span>), <span class="at">levels=</span><span class="fu">c</span>(<span class="st">&quot;Harvest&quot;</span>,<span class="st">&quot;Conserve&quot;</span>))</span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>  <span class="co"># Abundance|Decision: P(High|Harvest)=1 - p_decline_if_harvest, P(High|Conserve)=0.9, etc.</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>  cpt_abundance <span class="ot">&lt;-</span> <span class="fu">cptable</span>(<span class="sc">~</span>Abundance<span class="sc">|</span>Decision, <span class="at">values=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">-</span>p_decline_if_harvest, p_decline_if_harvest, <span class="fl">0.9</span>, <span class="fl">0.1</span>), <span class="at">levels=</span><span class="fu">c</span>(<span class="st">&quot;High&quot;</span>,<span class="st">&quot;Low&quot;</span>))</span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>  <span class="co"># Impact|Abundance: simple mapping</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a>  cpt_impact <span class="ot">&lt;-</span> <span class="fu">cptable</span>(<span class="sc">~</span>Impact<span class="sc">|</span>Abundance<span class="sc">:</span>Decision, <span class="at">values=</span><span class="fu">c</span>(<span class="fl">0.95</span>,<span class="fl">0.05</span>, <span class="fl">0.2</span>,<span class="fl">0.8</span>), <span class="at">levels=</span><span class="fu">c</span>(<span class="st">&quot;Recovery&quot;</span>,<span class="st">&quot;Decline&quot;</span>))</span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a>  plist <span class="ot">&lt;-</span> <span class="fu">compileCPT</span>(<span class="fu">list</span>(cpt_decision, cpt_abundance, cpt_impact))</span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a>  grain_net <span class="ot">&lt;-</span> <span class="fu">grain</span>(plist)</span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a>  query <span class="ot">&lt;-</span> <span class="fu">querygrain</span>(grain_net, <span class="at">nodes=</span><span class="fu">c</span>(<span class="st">&quot;Impact&quot;</span>), <span class="at">type=</span><span class="st">&quot;marginal&quot;</span>)</span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>  <span class="fu">return</span>(query)</span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a>}</span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a></span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="co"># run Monte Carlo many times (here, do 500 iterations)</span></span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">500</span>, <span class="sc">~</span><span class="fu">as.data.frame</span>(<span class="fu">sample_one</span>()))</span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="co"># summarize distributions for decisions (extract expected probability of Recovery/Decline for each decision)</span></span></code></pre></div>
+</div>
+<div id="decision-rules-and-visualization" class="section level2">
+<h2>4. Decision rules and visualization</h2>
+<ul>
+<li>Compute expected utility per decision for each Monte Carlo
+iteration, then compare mean, median and quantiles.</li>
+<li>Use conservative decision rules if stakeholders prefer lower risk
+(e.g., maximize the 10th percentile of utility).</li>
+</ul>
+<p>Visualization ideas:</p>
+<ul>
+<li>Density plots of expected utility for each option.</li>
+<li>Fan chart showing quantiles across iterations.</li>
+</ul>
+<!-- ```{r plot-idea, eval=TRUE} -->
+<!-- # Suppose we computed expected utility per decision across iterations into a data.frame `mc_util` -->
+<!-- ggplot(mc_util, aes(x=utility, fill=decision)) + geom_density(alpha=0.4) -->
+<!-- ``` -->
+</div>
+<div id="practical-notes-on-elicitation-and-aggregation" class="section level2">
+<h2>5. Practical notes on elicitation and aggregation</h2>
+<ul>
+<li>For binary outcomes from TEK use Beta priors (k + 1, n - k +
+1).</li>
+<li>For multinomial TEK responses use Dirichlet with counts + 1 as
+pseudo-counts.</li>
+<li>Weight informants by confidence or expertise when aggregating
+(weighted counts or hierarchical models).</li>
+<li>Record provenance and do sensitivity by omitting individual
+informants.</li>
+</ul>
+<div id="realistic-aggregation-examples" class="section level3">
+<h3>5.1 Realistic aggregation examples</h3>
+<p>We now show three practical aggregation methods using the simulated
+<code>informants</code> dataset above.</p>
+<ol style="list-style-type: decimal">
+<li>Simple pooling (counts -&gt; Beta/Dirichlet)</li>
+</ol>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Binary: counts for &#39;says_decline&#39;</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">sum</span>(informants<span class="sc">$</span>says_decline)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(informants)</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> k <span class="sc">+</span> <span class="dv">1</span>; beta <span class="ot">&lt;-</span> n <span class="sc">-</span> k <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;P(decline) prior ~ Beta(%d, %d) -&gt; mean = %.2f</span><span class="sc">\n</span><span class="st">&quot;</span>, alpha, beta, alpha<span class="sc">/</span>(alpha<span class="sc">+</span>beta)))</span></code></pre></div>
+<pre><code>## P(decline) prior ~ Beta(10, 12) -&gt; mean = 0.45</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Multinomial: counts for abundance categories -&gt; Dirichlet</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>ab_counts <span class="ot">&lt;-</span> <span class="fu">table</span>(informants<span class="sc">$</span>abundance)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>ab_dirichlet_alpha <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(ab_counts) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Abundance counts:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Abundance counts:</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">print</span>(ab_counts)</span></code></pre></div>
+<pre><code>## 
+##   High    Low Medium 
+##      7      8      5</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Weighted pooling by informant confidence</li>
+</ol>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Use confidence as weight (simple rescaling to pseudo-counts)</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>weights <span class="ot">&lt;-</span> informants<span class="sc">$</span>confidence <span class="sc">/</span> <span class="fu">sum</span>(informants<span class="sc">$</span>confidence)</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co"># Weighted count for binary outcome</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>weighted_k <span class="ot">&lt;-</span> <span class="fu">sum</span>(informants<span class="sc">$</span>says_decline <span class="sc">*</span> weights) <span class="sc">*</span> <span class="fu">nrow</span>(informants)</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="co"># Convert to pseudo-counts (floor/round) if needed for Dirichlet/Beta</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>wk <span class="ot">&lt;-</span> <span class="fu">round</span>(weighted_k)</span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>walpha <span class="ot">&lt;-</span> wk <span class="sc">+</span> <span class="dv">1</span>; wbeta <span class="ot">&lt;-</span> n <span class="sc">-</span> wk <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Weighted Beta prior approx: Beta(%d, %d) -&gt; mean = %.2f</span><span class="sc">\n</span><span class="st">&quot;</span>, walpha, wbeta, walpha<span class="sc">/</span>(walpha<span class="sc">+</span>wbeta)))</span></code></pre></div>
+<pre><code>## Weighted Beta prior approx: Beta(10, 12) -&gt; mean = 0.45</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># Weighted multinomial: use weighted frequencies</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>weighted_ab <span class="ot">&lt;-</span> <span class="fu">tapply</span>(weights, informants<span class="sc">$</span>abundance, sum)</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>weighted_ab_counts <span class="ot">&lt;-</span> <span class="fu">round</span>(weighted_ab <span class="sc">*</span> <span class="fu">nrow</span>(informants))</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Weighted abundance pseudo-counts:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Weighted abundance pseudo-counts:</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">print</span>(weighted_ab_counts)</span></code></pre></div>
+<pre><code>##   High    Low Medium 
+##      7      8      5</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Map qualitative categories to pseudo-counts</li>
+</ol>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="co"># Map High/Medium/Low to pseudo-counts reflecting stronger beliefs</span></span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>map_counts <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">High=</span><span class="dv">5</span>, <span class="at">Medium=</span><span class="dv">3</span>, <span class="at">Low=</span><span class="dv">1</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>qual_counts <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">c</span>(<span class="st">&quot;High&quot;</span>,<span class="st">&quot;Medium&quot;</span>,<span class="st">&quot;Low&quot;</span>), <span class="cf">function</span>(lvl) <span class="fu">sum</span>(map_counts[lvl] <span class="sc">*</span> (informants<span class="sc">$</span>abundance <span class="sc">==</span> lvl)))</span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Mapped pseudo-counts for abundance (qualitative -&gt; counts):</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Mapped pseudo-counts for abundance (qualitative -&gt; counts):</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">print</span>(qual_counts)</span></code></pre></div>
+<pre><code>##   High Medium    Low 
+##     35     15      8</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="co"># Convert to Dirichlet alpha</span></span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>qual_alpha <span class="ot">&lt;-</span> qual_counts <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="fu">print</span>(qual_alpha)</span></code></pre></div>
+<pre><code>##   High Medium    Low 
+##     36     16      9</code></pre>
+<p>All three approaches give you numeric pseudo-counts that can be used
+as Beta or Dirichlet parameters. Which is appropriate depends on your
+elicitation protocol and whether you want to weight informants by
+confidence or expertise.</p>
+<hr />
+</div>
+</div>
+</div>
+<div id="appendix-tek-elicitation-form-and-simulated-dataset" class="section level1">
+<h1>Appendix: TEK Elicitation Form and Simulated Dataset</h1>
+<p>This appendix provides a practical TEK elicitation form template and
+a self-contained simulated dataset so you can reproduce all examples in
+this vignette without external data.</p>
+<div id="a.-tek-elicitation-form-template" class="section level2">
+<h2>A. TEK Elicitation Form Template</h2>
+<p>Below is a template form that can be adapted for your specific
+research context. The form is designed to elicit three types of
+information: (1) binary management perception, (2) categorical abundance
+assessment, and (3) confidence rating.</p>
+<div id="informant-metadata" class="section level3">
+<h3>Informant Metadata</h3>
+<pre><code>Informant ID: ___________
+Date of interview: __________
+Location / Community: ____________________
+Years of experience with this resource: ___________
+Primary use of resource: [ ] Subsistence  [ ] Commercial  [ ] Cultural  [ ] Other: _______
+Language of interview: [ ] English  [ ] Other: ________________
+Interviewer name: ____________________</code></pre>
+</div>
+<div id="question-1-management-impact-binary" class="section level3">
+<h3>Question 1: Management Impact (Binary)</h3>
+<p><strong>“In your experience, when people <em>harvest</em> [RESOURCE],
+does this cause the population to decline quickly?”</strong></p>
+<pre><code>[ ] Yes, harvesting causes the population to decline
+[ ] No, the population does not decline from harvesting
+[ ] Uncertain / Depends on context</code></pre>
+</div>
+<div id="question-2-current-resource-status-categorical" class="section level3">
+<h3>Question 2: Current Resource Status (Categorical)</h3>
+<p><strong>“How would you assess the current abundance of [RESOURCE] in
+this area compared to your childhood or earlier years?”</strong></p>
+<pre><code>[ ] High - abundance is good, similar to or better than before
+[ ] Medium - abundance has declined somewhat, but the resource is still available
+[ ] Low - abundance has declined significantly; the resource is now scarce or rare
+[ ] Not sure</code></pre>
+</div>
+<div id="question-3-management-recommendation-categorical" class="section level3">
+<h3>Question 3: Management Recommendation (Categorical)</h3>
+<p><strong>“What management approach do you think would be best for
+[RESOURCE]?”</strong></p>
+<pre><code>[ ] Harvest freely (no restrictions)
+[ ] Harvest with guidelines (seasonal or quantity limits)
+[ ] Conserve strictly (minimize or prohibit harvesting)
+[ ] Let it recover, then harvest sustainably
+[ ] Other: _______________________</code></pre>
+</div>
+<div id="question-4-informant-confidence-rating" class="section level3">
+<h3>Question 4: Informant Confidence (Rating)</h3>
+<p><strong>“How confident are you in your answers to the above
+questions?”</strong></p>
+<pre><code>Confidence score (1 = not confident, 5 = very confident): [ 1 ] [ 2 ] [ 3 ] [ 4 ] [ 5 ]</code></pre>
+</div>
+<div id="question-5-contextual-notes" class="section level3">
+<h3>Question 5: Contextual Notes</h3>
+<p><strong>“Are there any other factors, changes, or context we should
+know about?”</strong></p>
+<pre><code>___________________________________________________________
+___________________________________________________________
+___________________________________________________________</code></pre>
+<hr />
+</div>
+</div>
+<div id="b.-complete-simulated-dataset-for-reproducibility" class="section level2">
+<h2>B. Complete Simulated Dataset for Reproducibility</h2>
+<p>Below we generate a realistic simulated TEK dataset with 50
+informants. You can use this dataset to run all the examples in the
+vignette and adapt them to your own data.</p>
+<div id="generate-the-simulated-dataset" class="section level3">
+<h3>Generate the simulated dataset</h3>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="co"># Set random seed for reproducibility</span></span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a><span class="co"># Set number of informants</span></span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a>n_informants <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a></span>
+<span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a><span class="co"># Create a data frame with informant characteristics</span></span>
+<span id="cb33-7"><a href="#cb33-7" tabindex="-1"></a><span class="co"># Create informant IDs from 1 to n_informants</span></span>
+<span id="cb33-8"><a href="#cb33-8" tabindex="-1"></a>tek_survey_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb33-9"><a href="#cb33-9" tabindex="-1"></a>  <span class="at">informant_id =</span> <span class="dv">1</span><span class="sc">:</span>n_informants,</span>
+<span id="cb33-10"><a href="#cb33-10" tabindex="-1"></a>  <span class="co"># Generate years of experience from normal distribution: mean=25, sd=15, minimum=5</span></span>
+<span id="cb33-11"><a href="#cb33-11" tabindex="-1"></a>  <span class="co"># rnorm: draw from normal distribution with specified mean and standard deviation</span></span>
+<span id="cb33-12"><a href="#cb33-12" tabindex="-1"></a>  <span class="co"># pmax: ensure no values below 5</span></span>
+<span id="cb33-13"><a href="#cb33-13" tabindex="-1"></a>  <span class="at">years_experience =</span> <span class="fu">pmax</span>(<span class="dv">5</span>, <span class="fu">round</span>(<span class="fu">rnorm</span>(n_informants, <span class="at">mean =</span> <span class="dv">25</span>, <span class="at">sd =</span> <span class="dv">15</span>))),</span>
+<span id="cb33-14"><a href="#cb33-14" tabindex="-1"></a>  <span class="co"># Generate primary use category: subsistence, commercial, or cultural</span></span>
+<span id="cb33-15"><a href="#cb33-15" tabindex="-1"></a>  <span class="co"># sample: take a sample of the specified size from the elements without replacement</span></span>
+<span id="cb33-16"><a href="#cb33-16" tabindex="-1"></a>  <span class="at">primary_use =</span> <span class="fu">sample</span>(</span>
+<span id="cb33-17"><a href="#cb33-17" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="st">&quot;Subsistence&quot;</span>, <span class="st">&quot;Commercial&quot;</span>, <span class="st">&quot;Cultural&quot;</span>),</span>
+<span id="cb33-18"><a href="#cb33-18" tabindex="-1"></a>    <span class="at">size =</span> n_informants,</span>
+<span id="cb33-19"><a href="#cb33-19" tabindex="-1"></a>    <span class="at">replace =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb33-20"><a href="#cb33-20" tabindex="-1"></a>    <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span>)</span>
+<span id="cb33-21"><a href="#cb33-21" tabindex="-1"></a>  ),</span>
+<span id="cb33-22"><a href="#cb33-22" tabindex="-1"></a>  <span class="co"># Initialize columns for responses (will fill in loops below)</span></span>
+<span id="cb33-23"><a href="#cb33-23" tabindex="-1"></a>  <span class="at">says_harvest_declines =</span> <span class="cn">NA</span>,</span>
+<span id="cb33-24"><a href="#cb33-24" tabindex="-1"></a>  <span class="at">abundance_status =</span> <span class="cn">NA</span>,</span>
+<span id="cb33-25"><a href="#cb33-25" tabindex="-1"></a>  <span class="at">management_recommendation =</span> <span class="cn">NA</span>,</span>
+<span id="cb33-26"><a href="#cb33-26" tabindex="-1"></a>  <span class="at">confidence =</span> <span class="cn">NA</span></span>
+<span id="cb33-27"><a href="#cb33-27" tabindex="-1"></a>)</span>
+<span id="cb33-28"><a href="#cb33-28" tabindex="-1"></a></span>
+<span id="cb33-29"><a href="#cb33-29" tabindex="-1"></a><span class="co"># Fill binary outcome: probability of saying &quot;harvesting causes decline&quot; increases with experience</span></span>
+<span id="cb33-30"><a href="#cb33-30" tabindex="-1"></a><span class="co"># Loop through each informant</span></span>
+<span id="cb33-31"><a href="#cb33-31" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_informants) {</span>
+<span id="cb33-32"><a href="#cb33-32" tabindex="-1"></a>  <span class="co"># Calculate probability based on years of experience (ranges from ~0.3 to 0.7)</span></span>
+<span id="cb33-33"><a href="#cb33-33" tabindex="-1"></a>  p_decline <span class="ot">&lt;-</span> <span class="fl">0.3</span> <span class="sc">+</span> (tek_survey_data<span class="sc">$</span>years_experience[i] <span class="sc">/</span> <span class="dv">100</span>) <span class="sc">*</span> <span class="fl">0.4</span></span>
+<span id="cb33-34"><a href="#cb33-34" tabindex="-1"></a>  <span class="co"># rbinom: draw from binomial distribution with size=1 (binary outcome) and probability p_decline</span></span>
+<span id="cb33-35"><a href="#cb33-35" tabindex="-1"></a>  tek_survey_data<span class="sc">$</span>says_harvest_declines[i] <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="at">size =</span> <span class="dv">1</span>, <span class="at">prob =</span> p_decline)</span>
+<span id="cb33-36"><a href="#cb33-36" tabindex="-1"></a>}</span>
+<span id="cb33-37"><a href="#cb33-37" tabindex="-1"></a></span>
+<span id="cb33-38"><a href="#cb33-38" tabindex="-1"></a><span class="co"># Fill categorical abundance assessment: correlated with perception of harvest decline</span></span>
+<span id="cb33-39"><a href="#cb33-39" tabindex="-1"></a><span class="co"># Create a matrix of probabilities for abundance (High, Medium, Low) given each response</span></span>
+<span id="cb33-40"><a href="#cb33-40" tabindex="-1"></a><span class="co"># rows: &quot;says decline&quot;=1, &quot;does not say decline&quot;=0; columns: High, Medium, Low probabilities</span></span>
+<span id="cb33-41"><a href="#cb33-41" tabindex="-1"></a>abundance_probs <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb33-42"><a href="#cb33-42" tabindex="-1"></a>  <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">0.3</span>,  <span class="co"># if says decline: P(High)=0.3, P(Medium)=0.4, P(Low)=0.3</span></span>
+<span id="cb33-43"><a href="#cb33-43" tabindex="-1"></a>    <span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>), <span class="co"># if does not say decline: P(High)=0.5, P(Medium)=0.3, P(Low)=0.2</span></span>
+<span id="cb33-44"><a href="#cb33-44" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">2</span>,</span>
+<span id="cb33-45"><a href="#cb33-45" tabindex="-1"></a>  <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
+<span id="cb33-46"><a href="#cb33-46" tabindex="-1"></a>)</span>
+<span id="cb33-47"><a href="#cb33-47" tabindex="-1"></a></span>
+<span id="cb33-48"><a href="#cb33-48" tabindex="-1"></a><span class="co"># Loop through each informant to assign abundance status</span></span>
+<span id="cb33-49"><a href="#cb33-49" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_informants) {</span>
+<span id="cb33-50"><a href="#cb33-50" tabindex="-1"></a>  <span class="co"># Select probability row based on their answer about decline (add 1 to convert 0/1 to row 1/2)</span></span>
+<span id="cb33-51"><a href="#cb33-51" tabindex="-1"></a>  row_idx <span class="ot">&lt;-</span> tek_survey_data<span class="sc">$</span>says_harvest_declines[i] <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb33-52"><a href="#cb33-52" tabindex="-1"></a>  <span class="co"># sample: select one abundance category with probabilities from the appropriate row</span></span>
+<span id="cb33-53"><a href="#cb33-53" tabindex="-1"></a>  tek_survey_data<span class="sc">$</span>abundance_status[i] <span class="ot">&lt;-</span> <span class="fu">sample</span>(</span>
+<span id="cb33-54"><a href="#cb33-54" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="st">&quot;High&quot;</span>, <span class="st">&quot;Medium&quot;</span>, <span class="st">&quot;Low&quot;</span>),</span>
+<span id="cb33-55"><a href="#cb33-55" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">1</span>,</span>
+<span id="cb33-56"><a href="#cb33-56" tabindex="-1"></a>    <span class="at">prob =</span> abundance_probs[row_idx, ]</span>
+<span id="cb33-57"><a href="#cb33-57" tabindex="-1"></a>  )</span>
+<span id="cb33-58"><a href="#cb33-58" tabindex="-1"></a>}</span>
+<span id="cb33-59"><a href="#cb33-59" tabindex="-1"></a></span>
+<span id="cb33-60"><a href="#cb33-60" tabindex="-1"></a><span class="co"># Fill management recommendation: correlated with perception of decline and current abundance</span></span>
+<span id="cb33-61"><a href="#cb33-61" tabindex="-1"></a><span class="co"># Loop through each informant</span></span>
+<span id="cb33-62"><a href="#cb33-62" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_informants) {</span>
+<span id="cb33-63"><a href="#cb33-63" tabindex="-1"></a>  <span class="co"># If they say decline AND perceive low abundance: recommend conservation</span></span>
+<span id="cb33-64"><a href="#cb33-64" tabindex="-1"></a>  <span class="cf">if</span> (tek_survey_data<span class="sc">$</span>says_harvest_declines[i] <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;&amp;</span> </span>
+<span id="cb33-65"><a href="#cb33-65" tabindex="-1"></a>      tek_survey_data<span class="sc">$</span>abundance_status[i] <span class="sc">==</span> <span class="st">&quot;Low&quot;</span>) {</span>
+<span id="cb33-66"><a href="#cb33-66" tabindex="-1"></a>    <span class="co"># sample: select one management option with specified probabilities</span></span>
+<span id="cb33-67"><a href="#cb33-67" tabindex="-1"></a>    tek_survey_data<span class="sc">$</span>management_recommendation[i] <span class="ot">&lt;-</span> <span class="fu">sample</span>(</span>
+<span id="cb33-68"><a href="#cb33-68" tabindex="-1"></a>      <span class="fu">c</span>(<span class="st">&quot;Conserve strictly&quot;</span>, <span class="st">&quot;Harvest with guidelines&quot;</span>, <span class="st">&quot;Let it recover, then harvest&quot;</span>),</span>
+<span id="cb33-69"><a href="#cb33-69" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">1</span>,</span>
+<span id="cb33-70"><a href="#cb33-70" tabindex="-1"></a>      <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.6</span>, <span class="fl">0.3</span>, <span class="fl">0.1</span>)</span>
+<span id="cb33-71"><a href="#cb33-71" tabindex="-1"></a>    )</span>
+<span id="cb33-72"><a href="#cb33-72" tabindex="-1"></a>  <span class="co"># Else if they perceive high abundance: less restrictive recommendations</span></span>
+<span id="cb33-73"><a href="#cb33-73" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (tek_survey_data<span class="sc">$</span>abundance_status[i] <span class="sc">==</span> <span class="st">&quot;High&quot;</span>) {</span>
+<span id="cb33-74"><a href="#cb33-74" tabindex="-1"></a>    tek_survey_data<span class="sc">$</span>management_recommendation[i] <span class="ot">&lt;-</span> <span class="fu">sample</span>(</span>
+<span id="cb33-75"><a href="#cb33-75" tabindex="-1"></a>      <span class="fu">c</span>(<span class="st">&quot;Harvest freely&quot;</span>, <span class="st">&quot;Harvest with guidelines&quot;</span>, <span class="st">&quot;Conserve strictly&quot;</span>),</span>
+<span id="cb33-76"><a href="#cb33-76" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">1</span>,</span>
+<span id="cb33-77"><a href="#cb33-77" tabindex="-1"></a>      <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.4</span>, <span class="fl">0.4</span>, <span class="fl">0.2</span>)</span>
+<span id="cb33-78"><a href="#cb33-78" tabindex="-1"></a>    )</span>
+<span id="cb33-79"><a href="#cb33-79" tabindex="-1"></a>  <span class="co"># Otherwise: balanced distribution of recommendations</span></span>
+<span id="cb33-80"><a href="#cb33-80" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb33-81"><a href="#cb33-81" tabindex="-1"></a>    tek_survey_data<span class="sc">$</span>management_recommendation[i] <span class="ot">&lt;-</span> <span class="fu">sample</span>(</span>
+<span id="cb33-82"><a href="#cb33-82" tabindex="-1"></a>      <span class="fu">c</span>(<span class="st">&quot;Harvest freely&quot;</span>, <span class="st">&quot;Harvest with guidelines&quot;</span>, <span class="st">&quot;Conserve strictly&quot;</span>, <span class="st">&quot;Let it recover, then harvest&quot;</span>),</span>
+<span id="cb33-83"><a href="#cb33-83" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">1</span>,</span>
+<span id="cb33-84"><a href="#cb33-84" tabindex="-1"></a>      <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.4</span>, <span class="fl">0.25</span>, <span class="fl">0.15</span>)</span>
+<span id="cb33-85"><a href="#cb33-85" tabindex="-1"></a>    )</span>
+<span id="cb33-86"><a href="#cb33-86" tabindex="-1"></a>  }</span>
+<span id="cb33-87"><a href="#cb33-87" tabindex="-1"></a>}</span>
+<span id="cb33-88"><a href="#cb33-88" tabindex="-1"></a></span>
+<span id="cb33-89"><a href="#cb33-89" tabindex="-1"></a><span class="co"># Fill confidence scores: higher for more experienced informants</span></span>
+<span id="cb33-90"><a href="#cb33-90" tabindex="-1"></a><span class="co"># Loop through each informant</span></span>
+<span id="cb33-91"><a href="#cb33-91" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_informants) {</span>
+<span id="cb33-92"><a href="#cb33-92" tabindex="-1"></a>  <span class="co"># Calculate probability of high confidence based on years of experience</span></span>
+<span id="cb33-93"><a href="#cb33-93" tabindex="-1"></a>  p_high_conf <span class="ot">&lt;-</span> <span class="fl">0.3</span> <span class="sc">+</span> (tek_survey_data<span class="sc">$</span>years_experience[i] <span class="sc">/</span> <span class="dv">100</span>) <span class="sc">*</span> <span class="fl">0.3</span></span>
+<span id="cb33-94"><a href="#cb33-94" tabindex="-1"></a>  <span class="co"># Assign confidence based on this probability</span></span>
+<span id="cb33-95"><a href="#cb33-95" tabindex="-1"></a>  <span class="co"># runif: draw from uniform distribution (0 to 1)</span></span>
+<span id="cb33-96"><a href="#cb33-96" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> p_high_conf) {</span>
+<span id="cb33-97"><a href="#cb33-97" tabindex="-1"></a>    <span class="co"># High confidence: choose between 4 or 5</span></span>
+<span id="cb33-98"><a href="#cb33-98" tabindex="-1"></a>    tek_survey_data<span class="sc">$</span>confidence[i] <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">4</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.4</span>, <span class="fl">0.6</span>))</span>
+<span id="cb33-99"><a href="#cb33-99" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb33-100"><a href="#cb33-100" tabindex="-1"></a>    <span class="co"># Lower confidence: choose between 2 or 3</span></span>
+<span id="cb33-101"><a href="#cb33-101" tabindex="-1"></a>    tek_survey_data<span class="sc">$</span>confidence[i] <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.4</span>, <span class="fl">0.6</span>))</span>
+<span id="cb33-102"><a href="#cb33-102" tabindex="-1"></a>  }</span>
+<span id="cb33-103"><a href="#cb33-103" tabindex="-1"></a>}</span>
+<span id="cb33-104"><a href="#cb33-104" tabindex="-1"></a></span>
+<span id="cb33-105"><a href="#cb33-105" tabindex="-1"></a><span class="co"># Display first 10 rows of the dataset</span></span>
+<span id="cb33-106"><a href="#cb33-106" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;TEK Survey Dataset - First 10 rows:</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## TEK Survey Dataset - First 10 rows:</code></pre>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="fu">print</span>(knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(tek_survey_data, <span class="dv">10</span>)))</span></code></pre></div>
+<pre><code>## 
+## 
+## | informant_id| years_experience|primary_use | says_harvest_declines|abundance_status |management_recommendation | confidence|
+## |------------:|----------------:|:-----------|---------------------:|:----------------|:-------------------------|----------:|
+## |            1|               46|Cultural    |                     1|Low              |Conserve strictly         |          3|
+## |            2|               17|Subsistence |                     0|Low              |Harvest with guidelines   |          5|
+## |            3|               30|Subsistence |                     1|Low              |Conserve strictly         |          2|
+## |            4|               34|Subsistence |                     0|Low              |Conserve strictly         |          5|
+## |            5|               31|Commercial  |                     1|High             |Harvest with guidelines   |          5|
+## |            6|               23|Commercial  |                     1|High             |Harvest freely            |          4|
+## |            7|               48|Cultural    |                     0|High             |Harvest with guidelines   |          3|
+## |            8|               24|Cultural    |                     0|Low              |Conserve strictly         |          4|
+## |            9|               55|Cultural    |                     1|High             |Harvest freely            |          4|
+## |           10|               24|Subsistence |                     1|High             |Harvest freely            |          2|</code></pre>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="co"># Print summary statistics</span></span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">Summary of TEK Survey Data (n=&quot;</span>, n_informants, <span class="st">&quot;)</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## 
+## Summary of TEK Survey Data (n= 50 )</code></pre>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;================================</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## ================================</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="co"># mean: calculate average; round to 1 decimal place</span></span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a><span class="co"># min/max: find minimum and maximum values</span></span>
+<span id="cb41-3"><a href="#cb41-3" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Years of experience: Mean =&quot;</span>, <span class="fu">round</span>(<span class="fu">mean</span>(tek_survey_data<span class="sc">$</span>years_experience), <span class="dv">1</span>), </span>
+<span id="cb41-4"><a href="#cb41-4" tabindex="-1"></a>    <span class="st">&quot;, Range =&quot;</span>, <span class="fu">min</span>(tek_survey_data<span class="sc">$</span>years_experience), <span class="st">&quot;-&quot;</span>, </span>
+<span id="cb41-5"><a href="#cb41-5" tabindex="-1"></a>    <span class="fu">max</span>(tek_survey_data<span class="sc">$</span>years_experience), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Years of experience: Mean = 26 , Range = 5 - 59</code></pre>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a><span class="co"># table: count frequency of each category</span></span>
+<span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Primary use breakdown:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Primary use breakdown:</code></pre>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(tek_survey_data<span class="sc">$</span>primary_use))</span></code></pre></div>
+<pre><code>## 
+##  Commercial    Cultural Subsistence 
+##          12          20          18</code></pre>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">Binary outcome (says harvesting declines):</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## 
+## Binary outcome (says harvesting declines):</code></pre>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(tek_survey_data<span class="sc">$</span>says_harvest_declines))</span></code></pre></div>
+<pre><code>## 
+##  0  1 
+## 29 21</code></pre>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">Abundance status:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## 
+## Abundance status:</code></pre>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(tek_survey_data<span class="sc">$</span>abundance_status))</span></code></pre></div>
+<pre><code>## 
+##   High    Low Medium 
+##     18     18     14</code></pre>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">Management recommendations:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## 
+## Management recommendations:</code></pre>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(tek_survey_data<span class="sc">$</span>management_recommendation))</span></code></pre></div>
+<pre><code>## 
+##            Conserve strictly               Harvest freely 
+##                           14                           10 
+##      Harvest with guidelines Let it recover, then harvest 
+##                           21                            5</code></pre>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">Confidence scores:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## 
+## Confidence scores:</code></pre>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(tek_survey_data<span class="sc">$</span>confidence))</span></code></pre></div>
+<pre><code>## 
+##  2  3  4  5 
+## 11 20  7 12</code></pre>
+</div>
+<div id="using-the-simulated-dataset-with-the-aggregation-methods" class="section level3">
+<h3>Using the simulated dataset with the aggregation methods</h3>
+<p>You can now apply the three aggregation approaches from Section 5.1
+to this complete dataset:</p>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" tabindex="-1"></a><span class="co"># === Simple pooling: binary outcome ===</span></span>
+<span id="cb63-2"><a href="#cb63-2" tabindex="-1"></a><span class="co"># sum: count the total number of informants who said harvesting causes decline (1 = yes, 0 = no)</span></span>
+<span id="cb63-3"><a href="#cb63-3" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">sum</span>(tek_survey_data<span class="sc">$</span>says_harvest_declines)</span>
+<span id="cb63-4"><a href="#cb63-4" tabindex="-1"></a><span class="co"># nrow: count the total number of rows (informants)</span></span>
+<span id="cb63-5"><a href="#cb63-5" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(tek_survey_data)</span>
+<span id="cb63-6"><a href="#cb63-6" tabindex="-1"></a><span class="co"># Beta distribution parameters with Laplace smoothing (add 1 to each)</span></span>
+<span id="cb63-7"><a href="#cb63-7" tabindex="-1"></a>alpha_simple <span class="ot">&lt;-</span> k <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb63-8"><a href="#cb63-8" tabindex="-1"></a>beta_simple <span class="ot">&lt;-</span> n <span class="sc">-</span> k <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb63-9"><a href="#cb63-9" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Binary outcome aggregation (Simple pooling):</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Binary outcome aggregation (Simple pooling):</code></pre>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" tabindex="-1"></a><span class="co"># sprintf: format and print the Beta distribution parameters</span></span>
+<span id="cb65-2"><a href="#cb65-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;  P(harvesting causes decline) ~ Beta(%d, %d)</span><span class="sc">\n</span><span class="st">&quot;</span>, alpha_simple, beta_simple))</span></code></pre></div>
+<pre><code>##   P(harvesting causes decline) ~ Beta(22, 30)</code></pre>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" tabindex="-1"></a><span class="co"># Calculate mean probability of the Beta distribution: alpha / (alpha + beta)</span></span>
+<span id="cb67-2"><a href="#cb67-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;  Mean probability: %.3f</span><span class="sc">\n</span><span class="st">&quot;</span>, alpha_simple <span class="sc">/</span> (alpha_simple <span class="sc">+</span> beta_simple)))</span></code></pre></div>
+<pre><code>##   Mean probability: 0.423</code></pre>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" tabindex="-1"></a><span class="co"># === Simple pooling: categorical outcome (abundance) ===</span></span>
+<span id="cb69-2"><a href="#cb69-2" tabindex="-1"></a><span class="co"># table: count frequency of each abundance category</span></span>
+<span id="cb69-3"><a href="#cb69-3" tabindex="-1"></a>abundance_counts <span class="ot">&lt;-</span> <span class="fu">table</span>(tek_survey_data<span class="sc">$</span>abundance_status)</span>
+<span id="cb69-4"><a href="#cb69-4" tabindex="-1"></a><span class="co"># Convert counts to Dirichlet parameters by adding 1 to each count</span></span>
+<span id="cb69-5"><a href="#cb69-5" tabindex="-1"></a>abundance_alpha <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(abundance_counts) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb69-6"><a href="#cb69-6" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Abundance status aggregation (Simple pooling):</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## Abundance status aggregation (Simple pooling):</code></pre>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Category counts:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   Category counts:</code></pre>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" tabindex="-1"></a><span class="fu">print</span>(abundance_counts)</span></code></pre></div>
+<pre><code>## 
+##   High    Low Medium 
+##     18     18     14</code></pre>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Dirichlet alpha (for Dirichlet prior):</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   Dirichlet alpha (for Dirichlet prior):</code></pre>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" tabindex="-1"></a><span class="fu">print</span>(abundance_alpha)</span></code></pre></div>
+<pre><code>## [1] 19 19 15</code></pre>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" tabindex="-1"></a><span class="co"># === Weighted pooling: by informant confidence ===</span></span>
+<span id="cb79-2"><a href="#cb79-2" tabindex="-1"></a><span class="co"># Divide each confidence score by the sum to create normalized weights (sum to 1)</span></span>
+<span id="cb79-3"><a href="#cb79-3" tabindex="-1"></a>weights <span class="ot">&lt;-</span> tek_survey_data<span class="sc">$</span>confidence <span class="sc">/</span> <span class="fu">sum</span>(tek_survey_data<span class="sc">$</span>confidence)</span>
+<span id="cb79-4"><a href="#cb79-4" tabindex="-1"></a><span class="co"># Multiply weighted responses by informant count and sum to get weighted pseudo-count</span></span>
+<span id="cb79-5"><a href="#cb79-5" tabindex="-1"></a><span class="co"># sum: add up the products of (informant response) * (normalized weight)</span></span>
+<span id="cb79-6"><a href="#cb79-6" tabindex="-1"></a>weighted_k_decline <span class="ot">&lt;-</span> <span class="fu">sum</span>(tek_survey_data<span class="sc">$</span>says_harvest_declines <span class="sc">*</span> weights) <span class="sc">*</span> <span class="fu">nrow</span>(tek_survey_data)</span>
+<span id="cb79-7"><a href="#cb79-7" tabindex="-1"></a><span class="co"># round: convert to integer for use as Beta parameter</span></span>
+<span id="cb79-8"><a href="#cb79-8" tabindex="-1"></a>wk_decline <span class="ot">&lt;-</span> <span class="fu">round</span>(weighted_k_decline)</span>
+<span id="cb79-9"><a href="#cb79-9" tabindex="-1"></a><span class="co"># Calculate Beta parameters with Laplace smoothing</span></span>
+<span id="cb79-10"><a href="#cb79-10" tabindex="-1"></a>walpha_decline <span class="ot">&lt;-</span> wk_decline <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb79-11"><a href="#cb79-11" tabindex="-1"></a>wbeta_decline <span class="ot">&lt;-</span> n <span class="sc">-</span> wk_decline <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb79-12"><a href="#cb79-12" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Binary outcome aggregation (Confidence-weighted):</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## Binary outcome aggregation (Confidence-weighted):</code></pre>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;  P(harvesting causes decline) ~ Beta(%d, %d)</span><span class="sc">\n</span><span class="st">&quot;</span>, walpha_decline, wbeta_decline))</span></code></pre></div>
+<pre><code>##   P(harvesting causes decline) ~ Beta(21, 31)</code></pre>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" tabindex="-1"></a><span class="co"># Calculate mean probability of the weighted Beta distribution</span></span>
+<span id="cb83-2"><a href="#cb83-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;  Mean probability: %.3f</span><span class="sc">\n</span><span class="st">&quot;</span>, walpha_decline <span class="sc">/</span> (walpha_decline <span class="sc">+</span> wbeta_decline)))</span></code></pre></div>
+<pre><code>##   Mean probability: 0.404</code></pre>
+<hr />
+</div>
+</div>
+<div id="c.-guidance-for-adapting-form-and-data" class="section level2">
+<h2>C. Guidance for Adapting Form and Data</h2>
+<ul>
+<li><strong>Customize question text</strong>: Replace
+<code>[RESOURCE]</code> with the actual resource you are studying (e.g.,
+“yam,” “mahogany,” “mangrove”).</li>
+<li><strong>Add or remove questions</strong>: You may want to add
+questions about specific threats, seasonal patterns, or restoration
+practices.</li>
+<li><strong>Language and terminology</strong>: Translate and adapt
+categories (High/Medium/Low) to match local terminology and
+concepts.</li>
+<li><strong>Informant selection</strong>: Consider stratifying by age,
+gender, duration of residence, or primary use to detect variation in
+TEK.</li>
+<li><strong>Sample size</strong>: The simulated dataset uses 50
+informants; adjust based on your resources and the diversity of your
+study population.</li>
+<li><strong>Data quality checks</strong>: Record provenance (who, when,
+where) and verify consistency (e.g., informants who say harvesting
+declines should more often report low abundance).</li>
+</ul>
+<hr />
+</div>
+<div id="d.-example-loading-your-own-data" class="section level2">
+<h2>D. Example: Loading Your Own Data</h2>
+<p>If you collect data using a form similar to the template in Section
+A, you can load and process it similarly to the simulated dataset:</p>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" tabindex="-1"></a><span class="co"># Load your survey data (replace &#39;your_data.csv&#39; with your file)</span></span>
+<span id="cb85-2"><a href="#cb85-2" tabindex="-1"></a><span class="co"># read.csv: read a comma-separated values file and create a data frame</span></span>
+<span id="cb85-3"><a href="#cb85-3" tabindex="-1"></a>my_tek_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;your_data.csv&quot;</span>)</span>
+<span id="cb85-4"><a href="#cb85-4" tabindex="-1"></a></span>
+<span id="cb85-5"><a href="#cb85-5" tabindex="-1"></a><span class="co"># Check structure of your data</span></span>
+<span id="cb85-6"><a href="#cb85-6" tabindex="-1"></a><span class="co"># str: display internal structure of an R object, showing column names, types, and sample values</span></span>
+<span id="cb85-7"><a href="#cb85-7" tabindex="-1"></a><span class="fu">str</span>(my_tek_data)</span>
+<span id="cb85-8"><a href="#cb85-8" tabindex="-1"></a></span>
+<span id="cb85-9"><a href="#cb85-9" tabindex="-1"></a><span class="co"># Summarize binary outcome</span></span>
+<span id="cb85-10"><a href="#cb85-10" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Binary outcome:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb85-11"><a href="#cb85-11" tabindex="-1"></a><span class="co"># table: create a frequency table of the responses</span></span>
+<span id="cb85-12"><a href="#cb85-12" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(my_tek_data<span class="sc">$</span>says_harvest_declines))</span>
+<span id="cb85-13"><a href="#cb85-13" tabindex="-1"></a></span>
+<span id="cb85-14"><a href="#cb85-14" tabindex="-1"></a><span class="co"># Aggregate binary outcome using the methods from Section 5.1</span></span>
+<span id="cb85-15"><a href="#cb85-15" tabindex="-1"></a><span class="co"># sum: count the number of &quot;yes&quot; responses (1 = yes)</span></span>
+<span id="cb85-16"><a href="#cb85-16" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">sum</span>(my_tek_data<span class="sc">$</span>says_harvest_declines)</span>
+<span id="cb85-17"><a href="#cb85-17" tabindex="-1"></a><span class="co"># nrow: count the total number of rows (informants)</span></span>
+<span id="cb85-18"><a href="#cb85-18" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(my_tek_data)</span>
+<span id="cb85-19"><a href="#cb85-19" tabindex="-1"></a><span class="co"># Calculate Beta distribution parameters with Laplace smoothing</span></span>
+<span id="cb85-20"><a href="#cb85-20" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> k <span class="sc">+</span> <span class="dv">1</span>; beta <span class="ot">&lt;-</span> n <span class="sc">-</span> k <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb85-21"><a href="#cb85-21" tabindex="-1"></a><span class="co"># sprintf: format the prior as a string and print it</span></span>
+<span id="cb85-22"><a href="#cb85-22" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Prior: Beta(%d, %d)</span><span class="sc">\n</span><span class="st">&quot;</span>, alpha, beta))</span></code></pre></div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Cory Whitney" />
+
+<meta name="date" content="2026-02-24" />
+
+<title>Decision-Framing in Community-Based Conservation: Framework, Cases, and Critical Limitations</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Decision-Framing in Community-Based
+Conservation: Framework, Cases, and Critical Limitations</h1>
+<h4 class="author">Cory Whitney</h4>
+<h4 class="date">2026-02-24</h4>
+
+
+
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>This vignette presents a critical framework for
+<strong>decision-framing</strong> in conservation and development
+contexts where Indigenous and local communities are engaged. It is
+grounded in decision theory, participatory ethics, and ethnobotany
+literature.</p>
+<p><strong>Critically, this is NOT a “how-to” guide for replicating a
+successful workshop.</strong></p>
+<p>Instead, it asks:</p>
+<ul>
+<li>What are the principles of <em>good</em> decision-framing in these
+contested contexts?</li>
+<li>Under what conditions does pre-framing help versus obscure?</li>
+<li>What assumptions am I making when I facilitate a participatory
+process?</li>
+<li>What structural constraints will any framing exercise fail to
+address?</li>
+</ul>
+<p>We use cases—including Benin, successful examples from other
+contexts, and documented failures—to illustrate these principles. We are
+radically honest about limitations.</p>
+<hr />
+</div>
+<div id="the-core-problem-why-framing-matters" class="section level1">
+<h1>1. The Core Problem: Why Framing Matters</h1>
+<p>Most conservation and development decisions are <em>not</em>
+primarily technical problems needing better frame. They are
+<strong>politically contested</strong>: conflicts between different
+values, interests, power, and visions of the future.</p>
+<p><strong>Standard participatory development frames often:</strong> -
+Take the decision space as given (pre-selected by outsiders) - Present
+decision-making as a technical optimization problem (“choose the best
+intervention”) - Obscure power imbalances by creating consensus in a
+workshop room that doesn’t reflect real constraints - Position
+Indigenous/local knowledge as data input rather than recognizing
+incommensurable decision-making systems</p>
+<p><strong>What we’re asking:</strong> Can structured pre-framing help
+communities clarify their own priorities <em>within their own decision
+systems</em>? Or does it simply impose an external logic, dressed in
+participatory language?</p>
+<hr />
+</div>
+<div id="theoretical-foundations" class="section level1">
+<h1>2. Theoretical Foundations</h1>
+<div id="decision-theory-and-its-limits" class="section level2">
+<h2>2.1 Decision Theory and Its Limits</h2>
+<p>Decision theory (particularly formal models like Multi-Criteria
+Decision Analysis) assumes: - <strong>Clearly defined
+alternatives</strong> (not contested) - <strong>Measurable
+outcomes</strong> around which utilities can be assigned -
+<strong>Rational actors</strong> optimizing preferences - <strong>Stable
+preferences</strong> over time</p>
+<p>In real conservation/development contexts: - <strong>Alternatives are
+politically contested</strong> (whose gets defined? who gets left out?)
+- <strong>Outcomes that matter most (dignity, autonomy, cultural
+continuity) are hard to quantify</strong> and often devalued in
+“rational” frameworks - <strong>Actors have conflicting
+interests</strong> that framing can suppress or surface -
+<strong>Preferences change</strong> in response to new information,
+power dynamics, or material constraints</p>
+<p><strong>What partial successes than absolute solutions.</strong>
+Structured pre-framing can help clarify tradeoffs <em>if</em> we
+acknowledge it’s not neutral—and <em>if</em> the decision space itself
+isn’t contested by the people involved.</p>
+</div>
+<div id="participatory-ethics-whose-process-whose-framing" class="section level2">
+<h2>2.2 Participatory Ethics: Whose Process? Whose Framing?</h2>
+<p>The reflexive question: <strong>Are you asking communities to adopt
+outsiders’ decision frameworks? Or supporting communities’ own decision
+processes?</strong></p>
+<p>These are fundamentally different, and the choice itself is a
+framing.</p>
+<table style="width:100%;">
+<colgroup>
+<col width="19%" />
+<col width="42%" />
+<col width="38%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Dimension</th>
+<th>Outsider-Imposed Frame</th>
+<th>Community-Led Process</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Who defines the decision</strong></td>
+<td>Researchers/NGOs/government</td>
+<td>Community members (and which members?)</td>
+</tr>
+<tr class="even">
+<td><strong>What counts as knowledge</strong></td>
+<td>Data that fits the model</td>
+<td>Multiple knowledge systems</td>
+</tr>
+<tr class="odd">
+<td><strong>Outcome success</strong></td>
+<td>Fits the external model’s predictions</td>
+<td>Reflects communities’ priorities (even if it contradicts outsiders’
+values)</td>
+</tr>
+<tr class="even">
+<td><strong>Power role</strong></td>
+<td>Frame is supposed to be neutral; analyst is expert</td>
+<td>Frame is explicitly a choice; power dynamics are named</td>
+</tr>
+<tr class="odd">
+<td><strong>Risk</strong></td>
+<td>Instrumentalizes TEK; legitimizes extractive agenda</td>
+<td>Takes longer; may challenge funder’s assumptions</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key risk in most participatory work:</strong> Power
+imbalances aren’t actively addressed. A workshop with a facilitator from
+an NGO or university will naturally privilege voices that are
+comfortable speaking in that setting, understand the framing already,
+have time to attend, and aren’t afraid of consequences.</p>
+</div>
+<div id="what-ethnobotany-contributes" class="section level2">
+<h2>2.3 What Ethnobotany Contributes</h2>
+<p>Ethnobotany documents <strong>what communities know and use</strong>,
+but there’s a critical gap between knowledge and decision-making.</p>
+<p><strong>Traditional knowledge about plant uses ≠ automatically better
+conservation outcomes.</strong></p>
+<p>Why? - <strong>Knowledge ≠ Access.</strong> Communities may know a
+species is nutritious but can’t harvest it (land tenure, legislation,
+distance). - <strong>Knowledge ≠ Agency.</strong> Communities may
+understand sustainable harvesting but are forced to overexploit by
+poverty, debt, or market pressure. - <strong>Knowledge ≠ Institutional
+support.</strong> Traditional practices may have worked in contexts with
+time-to-observe-and-adapt. Modern uncertainties (climate, market shocks,
+policy changes) may outpace traditional learning. - <strong>Different
+knowledge systems can be incommensurable.</strong> Western decision
+science and Indigenous ecological knowledge ask different questions and
+use different success criteria.</p>
+<p><strong>The opportunity:</strong> Ethnobotany can <em>inform</em>
+decisions by clarifying what communities already know, value, and
+practice. But framing and knowledge elicitation should be subordinate to
+supporting the community’s own decision-making, not the other way
+around.</p>
+<hr />
+</div>
+</div>
+<div id="epistemological-questions-you-must-answer-first" class="section level1">
+<h1>3. Epistemological Questions You Must Answer First</h1>
+<p>Before you design a framing exercise, be explicit about these
+questions:</p>
+<div id="who-are-the-community" class="section level3">
+<h3>3.1 Who Are “the Community”?</h3>
+<p>Communities are not homogeneous. A workshop will not include: -
+People who couldn’t attend (working, caring for family, sick) - People
+who are afraid to speak in the setting (due to gender, age, status,
+recent conflict) - Minorities whose interests conflict with the
+majority</p>
+<p><strong>Case recognition:</strong> In the Benin fonio workshop, 55
+people attended. The district has ~100,000 people. How representative is
+this? Were women equally comfortable voicing disagreement? Were poorer
+farmers represented, or only more established traders/processors?</p>
+</div>
+<div id="whose-decision-is-it-really" class="section level3">
+<h3>3.2 Whose Decision Is It, Really?</h3>
+<p>If a government agency funds the framing process and will implement
+the decision, the “participatory” part may legitimize a decision the
+government wanted anyway. Participants may sense this and adjust their
+input.</p>
+<p><strong>Question:</strong> If the community’s preferred option
+contradicts what the government/NGO/funder wants, will it be respected?
+If not, the framing is not bottom-up; it’s co-optation.</p>
+</div>
+<div id="what-counts-as-a-better-decision" class="section level3">
+<h3>3.3 What Counts as a Better Decision?</h3>
+<p>Much participatory work assumes outcomes are nutrition, income, or
+productivity. But ask communities directly: - Do they prioritize
+livelihood security, cultural continuity, autonomy, equity within the
+community, or the official outcomes? - If these conflict, whose priority
+wins?</p>
+<p>If you measure success by yield increase or nutrition consumption but
+the community values autonomy, you’ll claim success when the community
+may not agree.</p>
+</div>
+<div id="what-happens-after-the-workshop" class="section level3">
+<h3>3.4 What Happens After the Workshop?</h3>
+<p>A workshop is a bounded event. Participatory decision-framing only
+matters if the <em>framed decisions actually get made and matter over
+time</em>.</p>
+<ul>
+<li>Did the endorsed interventions happen?</li>
+<li>Did they achieve what participants expected?</li>
+<li>Did unanticipated consequences emerge?</li>
+<li>How did external constraints (markets, policy, climate, poverty)
+affect implementation?</li>
+</ul>
+<p>Most published participatory projects report the workshop output, not
+follow-up. This is how single anecdotes get labeled “methodology.”</p>
+<hr />
+</div>
+</div>
+<div id="when-does-decision-framing-help-when-do-they-obscure" class="section level1">
+<h1>4. When Does Decision-Framing Help? When Do They Obscure?</h1>
+<div id="conditions-where-structured-framing-helps" class="section level2">
+<h2>4.1 Conditions Where Structured Framing Helps</h2>
+<ol style="list-style-type: decimal">
+<li><strong>When stakeholders agree on the decision space</strong> but
+disagree on priorities.
+<ul>
+<li><em>Example:</em> Groups agree that fonio value-chain needs
+improvement but disagree on whether to prioritize yield, nutrition, or
+market access. Structured comparison of tradeoffs can clarify.</li>
+<li><em>Risk limit:</em> If some groups want to exit the value chain
+entirely, framing improvements within it obscures that option.</li>
+</ul></li>
+<li><strong>When knowledge is distributed</strong> and structured
+elicitation makes implicit expertise explicit.
+<ul>
+<li><em>Example:</em> Traders, farmers, consumers, and processors each
+know parts of the system. A structured matrix lets each voice their
+knowledge systematically.</li>
+<li><em>Risk limit:</em> If elicited knowledge contradicts the funder’s
+agenda, will it be acted on? If not, the knowledge-gathering is
+theater.</li>
+</ul></li>
+<li><strong>When time and resources are limited</strong> and structured
+prioritization beats ad-hoc discussion.
+<ul>
+<li><em>Example:</em> A one-day workshop with 55 people can’t solve
+everything; structured voting reduces noise.</li>
+<li><em>Risk limit:</em> Reduced discussion may suppress the reasoning
+behind priorities. Quantitative rankings can obscure why people voted
+that way.</li>
+</ul></li>
+<li><strong>When communities already have a decision framework</strong>
+and outsiders support (not replace) it.
+<ul>
+<li><em>Example:</em> A farming community traditionally makes decisions
+through elder councils. Outsider support includes providing information
+those councils request, respecting their authority, and accepting their
+decisions even if they differ from outsider views.</li>
+<li><em>Risk limit:</em> Rare in development/conservation work. Usually
+outsiders bring their own frame.</li>
+</ul></li>
+</ol>
+</div>
+<div id="conditions-where-decision-framing-obscures" class="section level2">
+<h2>4.2 Conditions Where Decision-Framing Obscures</h2>
+<ol style="list-style-type: decimal">
+<li><strong>When the decision space itself is contested.</strong>
+<ul>
+<li><em>Example:</em> Should fonio be industrialized or remain
+artisanal? Should conservation prioritize livelihood or biodiversity? If
+communities are divided on the deep question, framing within one option
+legitimizes it.</li>
+<li><em>Risk:</em> Appears to be participatory; actually privileges some
+visions and silences others.</li>
+</ul></li>
+<li><strong>When structural constraints (poverty, policy, markets) make
+the “choice” illusory.</strong>
+<ul>
+<li><em>Example:</em> A nutritious traditional crop is “chosen” as
+priority, but market prices and poverty mean households sell it anyway
+to buy cheap cereals. Framing made the choice visible but can’t remove
+the constraint.</li>
+<li><em>Reality:</em> The structure (prices, income, policy) is the
+actual decision-maker, not the workshop.</li>
+</ul></li>
+<li><strong>When outsiders hold implementation power.</strong>
+<ul>
+<li><em>Example:</em> A government or NGO funds a workshop to design
+interventions they’ll implement. Participants may sense they’re being
+consulted on details, not determining the direction.</li>
+<li><em>Risk:</em> Participatory process legitimizes the outsider
+agenda. It’s not bottom-up; it’s “invited participation” designed to
+build buy-in for a pre-set course.</li>
+</ul></li>
+<li><strong>When the framing assumes a universal decision-making
+logic</strong> that doesn’t match the community’s own.
+<ul>
+<li><em>Example:</em> A multi-criteria decision matrix assumes tradeoffs
+can be compared quantitatively. A community may use different logic: “We
+don’t harm the forest, period” isn’t a tradeoff calculation; it’s an
+ethic.</li>
+<li><em>Risk:</em> You’re teaching communities to think like decision
+scientists, not supporting how they already think.</li>
+</ul></li>
+<li><strong>When different stakeholder groups have genuinely
+incommensurable values.</strong>
+<ul>
+<li><em>Example:</em> Conservationists want species protection; farmers
+want food security; government wants market revenue. These aren’t just
+different priorities; they’re based on different value systems
+(ecocentric, livelihood-based, state development logic).</li>
+<li><em>Risk:</em> Framing creates false consensus. In the workshop,
+people compromise. Afterward, when resources become scarce, the
+compromise evaporates.</li>
+</ul></li>
+</ol>
+<hr />
+</div>
+</div>
+<div id="case-illustrations-success-partial-success-and-failure" class="section level1">
+<h1>5. Case Illustrations: Success, Partial Success, and Failure</h1>
+<p>We now examine specific cases to extract principles. The key
+question: <strong>What does each case tell us, and what doesn’t it tell
+us?</strong></p>
+<div id="benin-fonio-value-chain-framing-partial-success" class="section level2">
+<h2>5.1 Benin: Fonio Value-Chain Framing (Partial Success)</h2>
+<p><strong>Context:</strong> - Fonio (<em>Digitaria exilis</em>) is a
+nutritious, drought-tolerant grain with cultural significance in West
+Africa - Benin government, NGOs, and farmers sought to revitalize fonio
+production and processing as a livelihood and nutrition intervention - A
+participatory workshop with 55 stakeholders (16 agricultural
+institutions, 10 farmers, 9 consumers, 7 processors, 7 traders, 3
+transporters, 4 restaurants, 2 import suppliers) was convened in two
+towns (Boukoumbe and Natitingou) to identify priorities</p>
+<p><strong>The Process:</strong> - Two-day workshop - Expert
+consultation across value chain - Prioritization voting on interventions
+and objectives - Produced rankings of preferred interventions (advocacy
+for government support, improved varieties, public awareness, processing
+equipment, etc.)</p>
+<p><strong>What We Know It Achieved:</strong> - <strong>Clarified the
+landscape.</strong> Participants from different parts of the value chain
+were in the room together. This alone is rare; traders and farmers don’t
+usually sit together. - <strong>Surfaced gender differences.</strong>
+Women and men prioritized interventions differently. Men were more
+focused on production and mechanization; women emphasized processing
+equipment and equity. - <strong>Geographic variation.</strong> The two
+towns (Boukoumbe and Natitingou) had different priorities, challenging
+the assumption of a single “community” preference. - <strong>Explicit
+objectives.</strong> The group articulated six overarching objectives
+(income, nutrition, processing, equity, ecology, social inclusion), not
+just chosen interventions.</p>
+<p><strong>What We Don’t Know:</strong></p>
+<ol style="list-style-type: decimal">
+<li><strong>Post-workshop implementation.</strong> Did the prioritized
+interventions happen? Which ones? With what results? Did unanticipated
+consequences emerge?</li>
+<li><strong>Participant representativeness.</strong> 55 people is small
+relative to the fonio-farming population. Who couldn’t attend? Were
+voices equally weighted despite differences in power and resources?</li>
+<li><strong>Gender participation quality.</strong> Gender differences in
+priorities were recorded, but were women equally comfortable disagreeing
+with men in the room? Or did power dynamics influence those votes?</li>
+<li><strong>Structural constraints.</strong> What market forces,
+government policies, and climate pressures shaped actual decisions after
+the workshop? The framing identified preferences; what determined
+whether preferences became action?</li>
+<li><strong>Whose interests won.</strong> If consensus was reached on
+the six objectives, where did interests actually conflict? Was conflict
+suppressed to maintain workshop harmony?</li>
+</ol>
+<p><strong>What the Benin Case Shows:</strong> ✓ Structured
+prioritization can surface value-chain diversity<br />
+✓ Explicit differentiation by gender and location is possible<br />
+✓ Communities can articulate both interventions and underlying
+objectives<br />
+✓ A well-facilitated workshop can increase mutual understanding</p>
+<p><strong>What It Doesn’t Show:</strong> ✗ Whether decisions made in
+the workshop translate to real action<br />
+✗ Whether outcomes matched what was predicted<br />
+✗ How the process would work in a context with higher conflict, weaker
+consensus, or stronger external pressure<br />
+✗ Whether the process supported communities’ own decision-making or
+imposed a decision framework</p>
+<hr />
+</div>
+<div id="parallel-case-cocoa-agroforestry-in-ghana-partial-failure" class="section level2">
+<h2>5.2 Parallel Case: Cocoa Agroforestry in Ghana (Partial
+Failure)</h2>
+<p><strong>Context:</strong> - Climate change threatens cocoa production
+in Ghana; scholars and NGOs promoted shade-tree agroforestry as a
+climate-adaptive strategy - Trees provide moisture, carbon
+sequestration, and some economic benefit; farmers claimed to value it -
+A participatory framing exercise was conducted to identify barriers and
+prioritize action</p>
+<p><strong>What Happened:</strong> - Workshops produced consensus that
+shade trees were valuable and barriers were (a) land insecurity, (b)
+lack of credit, and (c) farmer knowledge gaps - Recommendations focused
+on extension training and microfinance - Implementation phase: despite
+funding for credit programs and extension agents, adoption of shade
+trees remained low</p>
+<p><strong>Why It Partially Failed:</strong> - <strong>The framing
+missed the real constraint.</strong> Cocoa prices were falling. Farmers
+prioritized current income (growing more cocoa plants) over long-term
+soil health or climate adaptation - <strong>The workshop produced
+consensus that wasn’t durable.</strong> Farmers said they wanted trees
+if land was secure; the “land insecurity” fix wasn’t addressed (requires
+government action). Without it, trees were a luxury they couldn’t afford
+- <strong>Implicit assumption:</strong> The framework assumed farmers’
+preferences were stable. In reality, market shocks and immediate
+survival needs override longer-term preferences - <strong>Power was
+invisible.</strong> No one in the workshop admitted that the real
+constraint was <strong>global commodity prices set outside
+Ghana</strong>. The framing focused on “knowledge gaps” and “credit
+access”—things the NGO could address. The price problem required
+confronting structural inequality (unfair trade terms, power of global
+commodity markets). That never came up.</p>
+<p><strong>The Lesson:</strong> Structured framing can clarify
+preferences but cannot substitute for addressing structural constraints.
+If the fundamental problem is external (global prices, state policy,
+climate), framing can clarify what people wish they could do, but it
+doesn’t change the possible set of actions. A stronger approach would
+have named the constraint openly: “Agroforestry is an option that works
+only <em>if</em> commodity prices stabilize or if livelihood
+diversification reduces dependence on cocoa.”</p>
+<hr />
+</div>
+<div id="contrasting-case-internally-driven-adaptation-in-madagascar-clearer-success" class="section level2">
+<h2>5.3 Contrasting Case: Internally Driven Adaptation in Madagascar
+(Clearer Success)</h2>
+<p><strong>Context:</strong> - Farmers in semi-arid Madagascar faced
+increasing drought. Rather than an external NGO convening a workshop,
+farmer groups themselves organized discussions about adaptive strategies
+- Extension workers provided information when requested, but the farmers
+defined the decision problem and process</p>
+<p><strong>What Was Different:</strong> - <strong>Farmers defined the
+question:</strong> “Given increasing drought, what can we grow and how
+should we manage land?” Rather than outsiders saying “we think
+agroforestry helps; what do you think?” - <strong>Multiple solutions
+tested locally.</strong> The group did informal experimentation with
+drought-tolerant varieties, water-harvesting techniques, and crop
+mixing. Different families tried different things; results were shared -
+<strong>Failures named and learned from.</strong> When practices didn’t
+work, people talked about why (hard to implement, didn’t fit labor
+constraints, unpredictable results). These became part of community
+knowledge - <strong>Outcomes measured by farmers’ own criteria.</strong>
+Success wasn’t yield increase (the external metric) but food security,
+livelihood stability, and soil health (farmers’ priorities)</p>
+<p><strong>Why This Was More Robust:</strong> - Farmers controlled the
+framing (what question to ask) - Multiple experiments reduced the risk
+of a single failed solution - Learning was iterative and local - Success
+criteria were theirs, not imposed - Power dynamics were more transparent
+(farmers leading; government as supporter, not authority)</p>
+<p><strong>Limitation:</strong> This case is less common in development
+literature because it doesn’t position foreigners as experts guiding the
+process. It’s harder to document and publish. But it persists in farmer
+groups globally.</p>
+<hr />
+</div>
+<div id="case-of-near-total-failure-participatory-conservation-that-ignored-local-property-claims-central-africa" class="section level2">
+<h2>5.4 Case of Near-Total Failure: “Participatory” Conservation That
+Ignored Local Property Claims (Central Africa)</h2>
+<p><strong>Context:</strong> - An international NGO conducted a
+participatory exercise to design a forest conservation strategy, framing
+the decision as “How can we preserve biodiversity while supporting
+livelihoods?” - Community members attended workshops and helped design a
+management plan based on conservation science and TEK - Plan was
+internationally acclaimed as a model of participatory conservation</p>
+<p><strong>What Actually Happened:</strong> - Government later used the
+conservation plan as justification to restrict community land access and
+establish a protected area - The “participatory” exercise never actually
+discussed land rights. The framing assumed communities would be there
+<em>as users</em>, not <em>as owners</em> - Communities had been
+involved in problem-solving as if they had agency; in reality, the land
+wasn’t theirs to decide about</p>
+<p><strong>The Lesson:</strong> Participatory framing can be a tool of
+co-optation if political power (who owns or controls land, who makes
+final decisions) is not addressed directly. The epistemological
+question—“Are we asking communities to improve use of land we control,
+or acknowledging their ownership?”—was answered implicitly (outside
+control) but appeared to be answered the other way (community-led).</p>
+<hr />
+</div>
+</div>
+<div id="structural-constraints-what-no-framing-can-solve" class="section level1">
+<h1>6. Structural Constraints: What No Framing Can Solve</h1>
+<p>Structured decision-framing operates in a context of
+<strong>structural constraints</strong> that shape the feasible set of
+actions. No amount of framing will expand that set.</p>
+<div id="economic-constraints" class="section level2">
+<h2>6.1 Economic Constraints</h2>
+<ul>
+<li><strong>Commodity prices.</strong> If global markets set prices that
+make a traditional crop uneconomical, a workshop can’t change that.
+Farmers may “choose” to grow it, but immediate income pressures
+override.</li>
+<li><strong>Poverty.</strong> People living on $1-2 per day cannot
+afford to adopt practices that require upfront investment, even if they
+rationally prefer them long-term.</li>
+<li><strong>Credit access.</strong> Markets don’t extend credit to small
+farmers in many contexts. Framing can’t replace finance.</li>
+</ul>
+</div>
+<div id="institutional-constraints" class="section level2">
+<h2>6.2 Institutional Constraints</h2>
+<ul>
+<li><strong>Land tenure insecurity.</strong> If farmers don’t control
+land rights, long-term investments (soil improvement, agroforestry) are
+irrational. Framing can’t solve insecurity.</li>
+<li><strong>Government enforcement.</strong> If species are legally
+protected, communities can’t “decide” to harvest them, no matter what
+they prefer.</li>
+<li><strong>Market access.</strong> If traders control sales and buy at
+low prices, farmers’ choice to grow something valuable is constrained by
+their ability to earn from it.</li>
+</ul>
+</div>
+<div id="ecological-and-climate-constraints" class="section level2">
+<h2>6.3 Ecological and Climate Constraints</h2>
+<ul>
+<li><strong>Unpredictability.</strong> Climate change increases
+variability. Traditional knowledge works in stable regimes; extreme
+events are outside historical range.</li>
+<li><strong>Ecological thresholds.</strong> If a species is declining
+toward extinction, it may be too late for any local management decision
+to reverse it.</li>
+</ul>
+</div>
+<div id="political-constraints" class="section level2">
+<h2>6.4 Political Constraints</h2>
+<ul>
+<li><strong>Conflicting policies.</strong> A national government may
+want to move toward industrial agriculture while a workshop advocates
+for agroecology. The government’s power overrides.</li>
+<li><strong>Elite capture.</strong> Wealthy traders/farmers may have the
+government’s ear. Community priorities count less.</li>
+<li><strong>External interests.</strong> If international actors
+(investors, governments, climate agreements) have stakes, local
+decisions may be framing as “choices” but have little actual
+authority.</li>
+</ul>
+</div>
+<div id="the-core-truth" class="section level2">
+<h2>The Core Truth</h2>
+<p><strong>Decision-framing makes visible what people prefer and value.
+It does not change the constraints under which they must
+live.</strong></p>
+<p>A more honest integration would: - Clear-eyed naming of constraints:
+“Here’s what you can control, here’s what you can’t. Given that, what
+are your priorities?” - Separate short-term necessary adaptations (to
+meet immediate needs within constraints) from longer-term visions (which
+require structural change) - Recognize that pursuing structural change
+(land rights, policy reform, market access) is itself a decision that
+should be part of the frame</p>
+<hr />
+</div>
+</div>
+<div id="principles-for-defensible-decision-framing-in-community-based-ethnobotany" class="section level1">
+<h1>7. Principles for Defensible Decision-Framing in Community-Based
+Ethnobotany</h1>
+<p>If you conduct a structured decision-framing exercise, do so with
+these principles:</p>
+<div id="be-radically-honest-about-what-youre-doing" class="section level3">
+<h3>7.1 Be Radically Honest About What You’re Doing</h3>
+<p><strong>Name explicitly:</strong> - Who is funding this and what do
+they expect? - Who defined the decision problem, and how might that
+reflect outsider assumptions? - Who is “the community,” and whose voice
+might be missing? - What happens if the community’s preferred outcome
+conflicts with funder expectations?</p>
+</div>
+<div id="distinguish-process-from-outcomes" class="section level3">
+<h3>7.2 Distinguish Process from Outcomes</h3>
+<ul>
+<li>A successful framing <em>process</em> = people had voice,
+understanding increased, relationships strengthened, values became
+explicit</li>
+<li>A successful <em>outcome</em> = the framed decisions were actually
+made and results matched predictions</li>
+<li>These can differgood process, limited implementation (as in Benin);
+less participatory process but better outcomes (as in some Madagascar
+cases); poor process with co-opted outcomes (as in Central Africa
+case)</li>
+</ul>
+</div>
+<div id="check-your-assumption-about-knowledge" class="section level3">
+<h3>7.3 Check Your Assumption About Knowledge</h3>
+<p>Don’t assume that: - Ethnobotanical knowledge (species uses,
+traditional practices) automatically translates to better decisions -
+Articulating TEK in a decision framework is the goal - Western
+decision-science frameworks are the appropriate tool for Indigenous
+decision-making</p>
+<p>Instead: - Offer knowledge in the form communities request - Support
+decision-making as they practice it, not as decision scientists define
+it - Be open to incommensurable logics (ecocentric values, relational
+ethics, spiritual relationships with species)</p>
+</div>
+<div id="leave-room-for-partial-failure" class="section level3">
+<h3>7.4 Leave Room for Partial Failure</h3>
+<p>A good framing exercise acknowledges: - Some stakeholders have
+genuinely conflicting interests; framing won’t resolve this - External
+constraints may make preferred options impossible - Implementation will
+be messier than the workshop - Adaptation and learning will happen over
+time, and the original frame may become irrelevant</p>
+</div>
+<div id="commit-to-follow-up" class="section level3">
+<h3>7.5 Commit to Follow-Up</h3>
+<p>If you facilitate a participatory decision-framing exercise: -
+Document what happened afterward, not just the workshop output - Be
+willing to report failures and unexpected consequences - Distinguish
+between what the workshop achieved and what it didn’t - Build learning
+loops, not linear implementation of “the plan”</p>
+</div>
+<div id="make-power-visible" class="section level3">
+<h3>7.6 Make Power Visible</h3>
+<p><strong>Don’t assume</strong> participatory = democratic. Ask: - Who
+had the most influence on the final framing? - Which interests were
+privileged and which suppressed? - What would happen if the community’s
+preference contradicted the funder/government? - Are there groups who
+couldn’t or wouldn’t participate?</p>
+<p><strong>One way to address this:</strong> Explicitly map stakeholder
+interests and power <em>before</em> you frame. Then, in the exercise,
+track where consensus is genuine and where power was exercised.</p>
+<hr />
+</div>
+</div>
+<div id="when-should-you-not-conduct-a-decision-framing-exercise" class="section level1">
+<h1>8. When Should You NOT Conduct a Decision-Framing Exercise?</h1>
+<p>The approach is inappropriate if:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>The community has not requested help with the
+decision.</strong> If framing is imposed, it’s not participatory, no
+matter the process.</p></li>
+<li><p><strong>The decision space is already determined</strong> by
+government policy or external actors. Framing creates the appearance of
+choice where there is none.</p></li>
+<li><p><strong>You can’t tolerate the outcome.</strong> If the
+community’s preferred option contradicts your agenda, the framing is
+theater. Better to be honest about which decisions are negotiable and
+which aren’t.</p></li>
+<li><p><strong>Critical structural constraints haven’t been
+addressed.</strong> If the real barriers (land tenure, poverty, policy)
+aren’t being tackled, framing is a Band-Aid.</p></li>
+<li><p><strong>Power imbalances are acute and unaddressed.</strong> In
+contexts of recent conflict, high inequality, or recent state
+repression, a workshop may look consensual while actually reproducing
+oppression.</p></li>
+<li><p><strong>You’re framing for extractive purposes</strong> (to take
+TEK without communities benefiting; to get buy-in for a pre-set plan; to
+generate data for publication). Name that intent instead.</p></li>
+</ol>
+<hr />
+</div>
+<div id="pedagogical-framework-using-ethnobotany-data-in-decisions" class="section level1">
+<h1>9. Pedagogical Framework: Using Ethnobotany Data in Decisions</h1>
+<p>If you do work with decision-framing and ethnobotany data, here’s how
+to integrate them:</p>
+<div id="elicit-tek-systematically" class="section level2">
+<h2>9.1 Elicit TEK Systematically</h2>
+<p>The <code>ethnobotanyR</code> package provides tools to quantify what
+communities know and use: - <strong>Use value (UV):</strong> What
+fraction of informants cite a species as useful? - <strong>Citation
+frequency:</strong> How often is a species cited per informant? -
+<strong>Relative importance (RI):</strong> Combines multiple dimensions
+(uses, citations, cultural ranking)</p>
+<p>These metrics translate qualitative interviews into distributions
+that can feed Bayesian models or decision frameworks.</p>
+</div>
+<div id="translate-tek-into-decision-relevant-information" class="section level2">
+<h2>9.2 Translate TEK into Decision-Relevant Information</h2>
+<p>Example: A species has high UV (many people know it) and high
+nutritional value. <strong>This tells you:</strong> Communities
+recognize the species as valuable. But it doesn’t tell you: - Whether
+they can access it (land rights, distance, seasonality) - Whether they
+actually use it (market prices may make it cheaper to buy alternatives)
+- Whether traditional quantities are sustainable under future conditions
+(climate change, population growth, commercialization)</p>
+<p><strong>Use the data to ask better questions, not to make decisions
+for the community.</strong></p>
+</div>
+<div id="communicate-uncertainty-explicitly" class="section level2">
+<h2>9.3 Communicate Uncertainty Explicitly</h2>
+<p>If you elicit TEK from 10 informants and 7 say a species is
+declining, that’s 70% concern. But: - That’s a small sample; confidence
+intervals are wide - The 3 who disagree matter; ask why - “Declining”
+might mean different things to different people</p>
+<p>Present data as: - “7 of 10 informants report [practice/perception]”
+rather than “[75% report]” - “Informants disagree on [X]; ask why” - “We
+don’t know [Y]; communities may have information we haven’t
+accessed”</p>
+<div id="extended-example-ethnobotany-in-benin-fonio-case" class="section level3">
+<h3>Extended Example: Ethnobotany in Benin Fonio Case</h3>
+<p>The Benin workshop used participatory prioritization. Ethnobotany
+could inform it by:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Pre-workshop knowledge elicitation.</strong> Interview
+farmers, traders, processors, consumers about their knowledge of fonio’s
+nutritional profile, flavor, agronomic requirements, and
+constraints.</p></li>
+<li><p><strong>Data in the workshop.</strong> Present back what you
+heard: “Farmers emphasize drought tolerance; traders emphasize shelf
+life; consumers emphasize taste and nutrition.” This makes implicit
+knowledge explicit and shows diversity.</p></li>
+<li><p><strong>Use value metrics.</strong> If you have UV and RI data,
+you can show how different groups value different aspects of fonio.
+Disagreements become visible; the framing discussion can address
+them.</p></li>
+<li><p><strong>Acknowledge limits.</strong> “We have knowledge about
+traditional uses and preferences. We don’t have data on whether
+scaled-up fonio production in current markets is economically viable.”
+Don’t overstate what ethnobotany tells you.</p></li>
+<li><p><strong>Frame the decision appropriately.</strong> If structural
+constraints (market prices, land tenure) are the real bottleneck, don’t
+frame the decision as if those are negotiable. Instead: “Given current
+markets and policy, which fonio value-chain options are actually within
+reach? And what would need to change to reach others?”</p></li>
+</ol>
+<hr />
+</div>
+</div>
+</div>
+<div id="summary-decision-framing-as-tool-not-solution" class="section level1">
+<h1>10. Summary: Decision-Framing as Tool, Not Solution</h1>
+<div id="what-decision-framing-can-do" class="section level2">
+<h2>What decision-framing <em>can</em> do:</h2>
+<p>✓ Make values and priorities explicit<br />
+✓ Reveal areas of agreement and disagreement<br />
+✓ Clarify tradeoffs<br />
+✓ Include diverse voices<br />
+✓ Increase mutual understanding<br />
+✓ Create space for joint learning</p>
+</div>
+<div id="what-it-cannot-do" class="section level2">
+<h2>What it <em>cannot</em> do:</h2>
+<p>✗ Solve structural problems (poverty, weak institutions, unfair
+markets, climate shocks)<br />
+✗ Create genuine power-sharing if power imbalances aren’t
+addressed<br />
+✗ Guarantee that preferred options are actually feasible<br />
+✗ Substitute for iterative, adaptive management over time<br />
+✗ Resolve genuinely incommensurable values</p>
+</div>
+<div id="the-ethical-stance" class="section level2">
+<h2>The ethical stance:</h2>
+<ul>
+<li>Be transparent about assumptions (yours and the community’s)</li>
+<li>Support communities’ own decision-making; don’t impose a
+framework</li>
+<li>Name constraints, don’t pretend framing solves them</li>
+<li>Follow through; report what actually happened, not just what was
+decided</li>
+<li>Accept that the community’s informed choice may differ from your
+prediction or preference</li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="references-and-further-reading" class="section level1">
+<h1>11. References and Further Reading</h1>
+<p><strong>Decision Theory &amp; Participatory Planning:</strong> -
+Raiffa, H. (1968). <em>Decision Analysis: Introductory Lectures on
+Choices Under Uncertainty</em>. Addison-Wesley. - Gregory, R., &amp;
+Keeney, R. L. (1994). Creating policy alternatives using stakeholder
+values. <em>Management Science</em>, 40(8), 1035-1048.</p>
+<p><strong>Participatory Development Critique:</strong> - Harriss, J.
+(2007). Antidevelopmentalism and the Understanding of Development.
+<em>Third World Quarterly</em>, 28(6), 1143-1151. - Mansuri, G., &amp;
+Rao, V. (2012). Localizing development: Does participation work?
+<em>World Bank Research Observer</em>, 27(2), 191-234.</p>
+<p><strong>Power in Participatory Conservation:</strong> - Cleaver, F.
+(2001). Institutions, agency and the limitations of participatory
+approaches to development. In B. Cooke &amp; U. Kothari (Eds.),
+<em>Participation: The New Tyranny?</em> Zed Books. - Agrawal, A., &amp;
+Gupta, K. (2005). Decentralization and participation: The governance of
+common pool resources in Nepal’s Terai. <em>World Development</em>,
+33(7), 1101-1114.</p>
+<p><strong>Ethnobotany, Knowledge, and Decision-Making:</strong> -
+Nadasdy, P. (1999). The politics of TEK: Power and the “integration” of
+knowledge. <em>Arctic Anthropology</em>, 36(1/2), 1-18. - Agrawal, A.
+(2002). Indigenous knowledge and the politics of: Decolonizing
+development. <em>Critique of Anthropology</em>, 22(2), 141-164.</p>
+<p><strong>Documented Cases:</strong> - Scoones, I., Drylands, I. D.,
+&amp; Toulmin, C. (Eds.). (1999). <em>Sustainable rangeland management
+in the Sahel</em>. IIED. - Osbahr, H., Dorward, P., &amp; Stern, R.
+(2011). Supporting agricultural innovation in Uganda to respond to
+climate risk: From participatory appraisal to implementation.
+<em>Environmental Research Letters</em>, 6(4), 044014.</p>
+<p><strong>Critical Ethnobotany:</strong> - Blumenthal, D. (2006).
+<em>Ethnobotany: A Reader</em>. Springer. - Schultes, R. E., &amp; von
+Reis, S. (Eds.). (1995). <em>Ethnobotany: Evolution of a
+discipline</em>. Timber Press.</p>
+<hr />
+</div>
+<div id="appendix-benin-case-study-details" class="section level1">
+<h1>Appendix: Benin Case Study Details</h1>
+<p>For reference, here is the structured prioritization data from the
+Benin fonio workshop:</p>
+<div id="interventions-prioritized-from-workshop-voting" class="section level2">
+<h2>Interventions Prioritized (from workshop voting)</h2>
+<ol style="list-style-type: decimal">
+<li><strong>Advocacy</strong> - Engage government and development
+partners on fonio national development plan</li>
+<li><strong>Improved varieties</strong> - Development of
+drought-tolerant, high-yield varieties</li>
+<li><strong>Public awareness</strong> - Population education on
+nutritional and health benefits</li>
+<li><strong>Processing equipment</strong> - Strengthen/develop
+small-scale processing capacity</li>
+<li><strong>Production training</strong> - Extension training on best
+practices</li>
+<li><strong>Market linkage</strong> - Create value-chain coordination
+mechanism</li>
+<li><strong>Business support</strong> - Assistance with business
+planning and credit access</li>
+<li><strong>Mechanization (production)</strong> - Facilitate access to
+labor-saving technologies</li>
+<li><strong>Good agricultural practices</strong> - Update crop
+management protocols and build capacity</li>
+</ol>
+</div>
+<div id="major-objectives-endorsed" class="section level2">
+<h2>Major Objectives Endorsed</h2>
+<ol style="list-style-type: decimal">
+<li><strong>Income &amp; Livelihoods</strong> - Increase productivity
+and production (improve farmer incomes)</li>
+<li><strong>Nutrition &amp; Health</strong> - Increase population
+consumption (improve nutrition)</li>
+<li><strong>Production &amp; Processing</strong> - Improve equipment and
+reduce hardship</li>
+<li><strong>Equity</strong> - Harmonize prices at community and national
+levels</li>
+<li><strong>Ecology</strong> - Preserve natural resources (biodiversity,
+soils, water)</li>
+<li><strong>Social Inclusion</strong> - Promote gender equity and
+inclusive participation</li>
+</ol>
+</div>
+<div id="key-observation-from-disaggregation" class="section level2">
+<h2>Key Observation from Disaggregation</h2>
+<p>When prioritization voting was disaggregated by: -
+<strong>Gender:</strong> Women prioritized processing equipment and
+equity more than men; men prioritized mechanization more -
+<strong>Location:</strong> Boukoumbe and Natitingou had different
+top-three interventions, despite both being fonio-growing regions -
+<strong>Stakeholder type:</strong> Farmers, traders, processors,
+consumers prioritized different things</p>
+<p><strong>This diversity is the most important output of the
+workshop.</strong> It shows that “the community preference” for fonio
+does not exist; there are multiple, sometimes conflicting preferences. A
+defensible approach would: - Name these conflicts explicitly - Ask which
+groups are advantaged vs. disadvantaged by different interventions -
+Resist creating false consensus - Support priority-setting within each
+stakeholder group, then work on bridging across groups</p>
+<p><strong>What happened afterward?</strong> (Follow-up documentation
+would be essential to know whether this exercise led to real change, was
+co-opted, or faded away.)</p>
+<hr />
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

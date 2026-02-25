@@ -5,6 +5,7 @@ knitr::opts_chunk$set(
 )
 
 load("ethnobotanydata.rda")
+# devtools::install_github('alastair-JL/AnthroTools')
 library(dplyr)
 library(ethnobotanyR)
 library(ggalluvial)
@@ -14,17 +15,30 @@ library(magrittr)
 # in case of rendering issues render with 
 # rmarkdown::render('vignettes/ethnobotanyr_vignette.Rmd', output_file='ethnobotanyr_vignette.html', output_dir='vignettes')
 
+knitr::write_bib(c(.packages(), 
+                   "dplyr",
+                   "ethnobotanyR",
+                   "ggalluvial",
+                   "ggplot2",
+                   "ggridges",
+                   "magrittr",
+                   "knitr",
+                   "magrittr",
+                   "Taxonstand"), file = "references/model_packages.bib")
 
-## -----------------------------------------------------------------------------
+
+## ----cite_ethnobotanyR, comment=NA, echo=FALSE--------------------------------
 citation("ethnobotanyR")
 
-## ---- echo= FALSE-------------------------------------------------------------
+## ----echo= FALSE--------------------------------------------------------------
 knitr::kable(head(ethnobotanydata), digits = 2, caption = "First six rows of the example ethnobotany data included with ethnobotanyR")
 
-## ----ethno_boot_uses----------------------------------------------------------
+## ----ethno_boot_uses_a--------------------------------------------------------
 sp_a_data <- ethnobotanydata %>% filter(sp_name == "sp_a") 
 
 sp_a_use <- ethno_boot(sp_a_data$Use_3, statistic = mean, n1 = 1000)
+
+## ----ethno_boot_uses_b--------------------------------------------------------
 
 sp_b_data <- ethnobotanydata %>% filter(sp_name == "sp_b") 
 
@@ -86,6 +100,7 @@ ethno_sp_a_rich <- data.frame(replicate(3,sample(0:10,20,rep=TRUE)))
   20, replace=TRUE)
 
 ## -----------------------------------------------------------------------------
+# Assign prior competencies: higher values (e.g., 0.9) indicate we trust that informant's data more.
 ethno_compet_sp_a_rich <- 
           dplyr::recode(ethno_sp_a_rich$informant,
           User_1 = 0.9, User_2 = 0.5)
