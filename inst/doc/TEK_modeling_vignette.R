@@ -1,8 +1,10 @@
 ## ----set-up, eval=TRUE--------------------------------------------------------
-# Example: create Beta priors from TEK counts (k out of n informants say 'harvest causes decline')
-tek_k <- 7   # informants saying 'decline'
-tek_n <- 10  # total informants
-# Beta posterior (Laplace smoothing): Beta(k+1, n-k+1)
+library(ethnobotanyR)
+# Informants are gardens. k of n gardens growing avocado (Persea americana) sell it.
+avocado <- homegardens[homegardens$sp_name == "Persea americana", ]
+tek_k <- sum(avocado$sale)  # gardens that sell avocado
+tek_n <- nrow(avocado)      # gardens that grow avocado
+# Beta posterior with a uniform prior: Beta(k+1, n-k+1)
 alpha <- tek_k + 1
 beta  <- tek_n - tek_k + 1
 
@@ -12,28 +14,19 @@ p_samples <- rbeta(1000, alpha, beta)
 
 # Inspect distribution
 library(ggplot2)
-qplot(p_samples, geom = "density") + ggtitle("TEK-derived prior for P(decline | harvest)")
+ggplot(data.frame(p = p_samples), aes(p)) +
+  geom_density() +
+  labs(x = "P(a garden growing avocado sells it)", title = "Beta posterior from survey counts")
 
 ## ----sim-data, eval=TRUE------------------------------------------------------
 set.seed(42)
-n_inf <- 20
-# create a data frame
+uses <- setdiff(names(homegardens), c("informant", "sp_name"))
 informants <- data.frame(
-  id = 1:n_inf,
-  # binomial distribution with parameters n, size and prob
-  says_decline = rbinom(n = n_inf, size = 1, prob = 0.6),
-  # for abundance, take a sample of the specified size from the elements of x using either with or without replacement.
-  abundance = sample(x= c("High","Medium","Low"), 
-                     size = n_inf, 
-                     replace=TRUE, 
-                     prob = c(0.4,0.35,0.25)),
-  # take a sample again for confidence
-  confidence = sample(3:5, 
-                      size = n_inf, 
-                      replace=TRUE,
-                      prob=c(0.2,0.6,0.2))
+  id = avocado$informant,
+  sells = avocado$sale,
+  breadth = cut(rowSums(avocado[uses]), c(0, 1, 2, Inf), labels = c("1", "2", "3+")),
+  confidence = sample(3:5, nrow(avocado), replace = TRUE, prob = c(0.2, 0.6, 0.2))  # simulated
 )
-
 knitr::kable(head(informants, 8))
 
 ## ----bn-mc-workflow, eval=requireNamespace("bnlearn", quietly = TRUE) && requireNamespace("gRain", quietly = TRUE)----
@@ -43,80 +36,104 @@ if (requireNamespace("bnlearn", quietly = TRUE) && requireNamespace("gRain", qui
   message("Skipping BN + gRain workflow: 'bnlearn' and/or 'gRain' not available")
 }
 
-# define simple TEK priors (ensure alpha/beta are available during knitting)
+# ILLUSTRATIVE elicited judgement, not in the survey: 7 of 10 informants say harvest lowers abundance
 tek_k <- 7   # number of informants saying 'decline'
 tek_n <- 10  # total informants
 alpha <- tek_k + 1
 beta  <- tek_n - tek_k + 1
 
-# define structure
-model_string <- "[Decision][Abundance|Decision][Impact|Abundance:Decision]"
-net <- model2network(model_string)
-
-# a single Monte Carlo iteration (pseudo-code)
+# Structure: Decision -> Abundance -> Impact (Decision also acts on Impact)
+# p_low_harvest is the probability that abundance is Low under harvest. The Beta prior
+# below is uncertainty about that probability, taken here from informants' judgements;
+# the share of informants who agree is a stand-in, not an observed frequency.
+yn <- c("Yes", "No")
 sample_one <- function(){
-  # sample p(Abundance=Low | Decision=Harvest) from TEK-derived Beta
-  p_decline_if_harvest <- rbeta(1, alpha, beta)
+  p_low_harvest <- rbeta(1, alpha, beta)
+  p_low_conserve <- 0.1  # toy value, fixed
 
-  # create CPTs (values must be in the order expected by gRain)
-  # Example CPTs (toy values)
-  cpt_decision <- cptable(~Decision, values=c(0.5,0.5), levels=c("Harvest","Conserve"))
-  # Abundance|Decision: P(High|Harvest)=1 - p_decline_if_harvest, P(High|Conserve)=0.9, etc.
-  cpt_abundance <- cptable(~Abundance|Decision, values=c(1-p_decline_if_harvest, p_decline_if_harvest, 0.9, 0.1), levels=c("High","Low"))
-  # Impact|Abundance: simple mapping
-  cpt_impact <- cptable(~Impact|Abundance:Decision, values=c(0.95,0.05, 0.2,0.8), levels=c("Recovery","Decline"))
+  cpt_decision <- cptable(~Decision, values = c(0.5, 0.5), levels = c("Harvest", "Conserve"))
+  cpt_abundance <- cptable(~Abundance | Decision,
+    values = c(1 - p_low_harvest, p_low_harvest, 1 - p_low_conserve, p_low_conserve),
+    levels = c("High", "Low"))
+  # Impact | Abundance, Decision: 8 values, ordered Recovery/Decline for each
+  # combination, Abundance varying fastest, then Decision
+  cpt_impact <- cptable(~Impact | Abundance + Decision,
+    values = c(0.95, 0.05,  0.40, 0.60,   # Harvest: High, Low
+               0.98, 0.02,  0.70, 0.30),  # Conserve: High, Low
+    levels = c("Recovery", "Decline"))
 
-  plist <- compileCPT(list(cpt_decision, cpt_abundance, cpt_impact))
-  grain_net <- grain(plist)
-  query <- querygrain(grain_net, nodes=c("Impact"), type="marginal")
-  return(query)
+  grain_net <- grain(compileCPT(list(cpt_decision, cpt_abundance, cpt_impact)))
+  # set each decision as evidence and read P(Recovery)
+  sapply(c("Harvest", "Conserve"), function(d) {
+    querygrain(setEvidence(grain_net, nodes = "Decision", states = d),
+               nodes = "Impact", type = "marginal")$Impact["Recovery"]
+  })
 }
 
-# run Monte Carlo many times (here, do 500 iterations)
-results <- map_dfr(1:500, ~as.data.frame(sample_one()))
+set.seed(1)
+results <- as.data.frame(t(replicate(500, sample_one())))
+colnames(results) <- c("Harvest", "Conserve")
 
-# summarize distributions for decisions (extract expected probability of Recovery/Decline for each decision)
+# posterior of P(Recovery) per decision, and of the difference
+apply(results, 2, quantile, probs = c(0.1, 0.5, 0.9))
+quantile(results$Conserve - results$Harvest, c(0.1, 0.5, 0.9))
 
+## ----bn-learn, eval=requireNamespace("bnlearn", quietly = TRUE) && requireNamespace("gRain", quietly = TRUE)----
+library(bnlearn)
+hg <- merge(homegardens, homegardens_species, by = "sp_name")
+hg <- hg[hg$type != "Palm", ]
+bn_data <- data.frame(
+  type = factor(hg$type), native = factor(hg$native, labels = c("introduced", "native")),
+  food = factor(hg$food), sale = factor(hg$sale), medicine = factor(hg$medicine))
 
+set.seed(1)
+strength <- boot.strength(bn_data, R = 200, algorithm = "hc")
+strength[strength$strength > 0.5 & strength$direction > 0.5, ]
+
+net <- averaged.network(strength, threshold = 0.5)
+fitted_net <- bn.fit(net, bn_data, method = "bayes", iss = 10)  # Dirichlet prior
+
+## ----bn-query, eval=requireNamespace("bnlearn", quietly = TRUE) && requireNamespace("gRain", quietly = TRUE)----
+g <- bnlearn::as.grain(fitted_net)
+q <- gRain::querygrain(gRain::setEvidence(g, nodes = c("type", "native"),
+                                          states = c("Tree", "native")),
+                       nodes = "medicine", type = "marginal")
+q$medicine
 
 ## ----agg-simple, eval=TRUE----------------------------------------------------
-# Binary: counts for 'says_decline'
-k <- sum(informants$says_decline)
+# Binary: counts for 'sells'
+k <- sum(informants$sells)
 n <- nrow(informants)
 alpha <- k + 1; beta <- n - k + 1
-cat(sprintf("P(decline) prior ~ Beta(%d, %d) -> mean = %.2f\n", alpha, beta, alpha/(alpha+beta)))
+cat(sprintf("P(sells) prior ~ Beta(%d, %d) -> mean = %.2f\n", alpha, beta, alpha/(alpha+beta)))
 
-# Multinomial: counts for abundance categories -> Dirichlet
-ab_counts <- table(informants$abundance)
-ab_dirichlet_alpha <- as.numeric(ab_counts) + 1
-cat("Abundance counts:\n")
-print(ab_counts)
+# Multinomial: counts for breadth categories -> Dirichlet
+br_counts <- table(informants$breadth)
+br_dirichlet_alpha <- as.numeric(br_counts) + 1
+cat("Breadth counts:\n")
+print(br_counts)
 
 ## ----agg-weighted, eval=TRUE--------------------------------------------------
-# Use confidence as weight (simple rescaling to pseudo-counts)
+# Use confidence as weight
 weights <- informants$confidence / sum(informants$confidence)
-# Weighted count for binary outcome
-weighted_k <- sum(informants$says_decline * weights) * nrow(informants)
-# Convert to pseudo-counts (floor/round) if needed for Dirichlet/Beta
-wk <- round(weighted_k)
-walpha <- wk + 1; wbeta <- n - wk + 1
-cat(sprintf("Weighted Beta prior approx: Beta(%d, %d) -> mean = %.2f\n", walpha, wbeta, walpha/(walpha+wbeta)))
+# Weighted proportion, with the effective sample size (Kish) so that
+# weighting does not make the prior look more certain than n informants allow
+p_w <- sum(informants$sells * weights)
+n_eff <- 1 / sum(weights^2)
+walpha <- p_w * n_eff + 1; wbeta <- (1 - p_w) * n_eff + 1
+cat(sprintf("Weighted Beta prior approx: Beta(%.1f, %.1f), n_eff = %.1f -> mean = %.2f\n", walpha, wbeta, n_eff, walpha/(walpha+wbeta)))
 
 # Weighted multinomial: use weighted frequencies
-weighted_ab <- tapply(weights, informants$abundance, sum)
-weighted_ab_counts <- round(weighted_ab * nrow(informants))
-cat("Weighted abundance pseudo-counts:\n")
-print(weighted_ab_counts)
+weighted_br <- tapply(weights, informants$breadth, sum)
+weighted_br_counts <- weighted_br * n_eff
+cat("Weighted breadth pseudo-counts:\n")
+print(weighted_br_counts)
 
 ## ----agg-qualitative, eval=TRUE-----------------------------------------------
-# Map High/Medium/Low to pseudo-counts reflecting stronger beliefs
-map_counts <- c(High=5, Medium=3, Low=1)
-qual_counts <- sapply(c("High","Medium","Low"), function(lvl) sum(map_counts[lvl] * (informants$abundance == lvl)))
-cat("Mapped pseudo-counts for abundance (qualitative -> counts):\n")
-print(qual_counts)
-# Convert to Dirichlet alpha
-qual_alpha <- qual_counts + 1
-print(qual_alpha)
+w <- informants$confidence / sum(informants$confidence)
+p_br <- tapply(w, informants$breadth, sum)
+qual_alpha <- p_br * n_eff + 1
+print(round(qual_alpha, 2))
 
 ## ----generate-simulated-tek-data, eval=TRUE-----------------------------------
 # Set random seed for reproducibility
@@ -276,16 +293,13 @@ print(abundance_alpha)
 # === Weighted pooling: by informant confidence ===
 # Divide each confidence score by the sum to create normalized weights (sum to 1)
 weights <- tek_survey_data$confidence / sum(tek_survey_data$confidence)
-# Multiply weighted responses by informant count and sum to get weighted pseudo-count
-# sum: add up the products of (informant response) * (normalized weight)
-weighted_k_decline <- sum(tek_survey_data$says_harvest_declines * weights) * nrow(tek_survey_data)
-# round: convert to integer for use as Beta parameter
-wk_decline <- round(weighted_k_decline)
-# Calculate Beta parameters with Laplace smoothing
-walpha_decline <- wk_decline + 1
-wbeta_decline <- n - wk_decline + 1
+# Weighted proportion with the Kish effective sample size
+p_w_decline <- sum(tek_survey_data$says_harvest_declines * weights)
+n_eff_tek <- 1 / sum(weights^2)
+walpha_decline <- p_w_decline * n_eff_tek + 1
+wbeta_decline <- (1 - p_w_decline) * n_eff_tek + 1
 cat("\nBinary outcome aggregation (Confidence-weighted):\n")
-cat(sprintf("  P(harvesting causes decline) ~ Beta(%d, %d)\n", walpha_decline, wbeta_decline))
+cat(sprintf("  P(harvesting causes decline) ~ Beta(%.1f, %.1f)\n", walpha_decline, wbeta_decline))
 # Calculate mean probability of the weighted Beta distribution
 cat(sprintf("  Mean probability: %.3f\n", walpha_decline / (walpha_decline + wbeta_decline)))
 

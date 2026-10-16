@@ -15,8 +15,8 @@ mean_uv
 # 95% credible interval
 ci_uv <- qbeta(c(0.025, 0.975), alpha_post, beta_post)
 
-# upper 
+# lower
 ci_uv[1]
-# lower 
+# upper
 ci_uv[2]
 

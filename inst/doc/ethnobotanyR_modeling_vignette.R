@@ -4,123 +4,105 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-load("ethnobotanydata.rda")
-# devtools::install_github('alastair-JL/AnthroTools')
 library(dplyr)
 library(ethnobotanyR)
-library(ggalluvial)
 library(ggplot2)
 library(ggridges)
 library(magrittr)
-# in case of rendering issues render with 
-# rmarkdown::render('vignettes/ethnobotanyr_vignette.Rmd', output_file='ethnobotanyr_vignette.html', output_dir='vignettes')
-
-knitr::write_bib(c(.packages(), 
-                   "dplyr",
-                   "ethnobotanyR",
-                   "ggalluvial",
-                   "ggplot2",
-                   "ggridges",
-                   "magrittr",
-                   "knitr",
-                   "magrittr",
-                   "Taxonstand"), file = "references/model_packages.bib")
-
+# The .bib is not rewritten at build time; regenerate it by hand if packages change
 
 ## ----cite_ethnobotanyR, comment=NA, echo=FALSE--------------------------------
 citation("ethnobotanyR")
 
-## ----echo= FALSE--------------------------------------------------------------
-knitr::kable(head(ethnobotanydata), digits = 2, caption = "First six rows of the example ethnobotany data included with ethnobotanyR")
+## ----data_head, echo=FALSE----------------------------------------------------
+knitr::kable(head(homegardens[, 1:8]), caption = "First six rows of the homegardens data (first six use categories shown)")
 
-## ----ethno_boot_uses_a--------------------------------------------------------
-sp_a_data <- ethnobotanydata %>% filter(sp_name == "sp_a") 
+## ----data_dims----------------------------------------------------------------
+dim(homegardens)
+nlevels(homegardens$informant)  # gardens
+nlevels(homegardens$sp_name)    # species
 
-sp_a_use <- ethno_boot(sp_a_data$Use_3, statistic = mean, n1 = 1000)
+## ----ethno_beta---------------------------------------------------------------
+beta_hg <- ethno_beta(homegardens, level = 0.9)
+# species grown in at least 50 gardens with the highest use probabilities
+beta_hg[beta_hg$n >= 50, ] %>%
+  arrange(desc(mean)) %>%
+  head(8)
 
-## ----ethno_boot_uses_b--------------------------------------------------------
+## ----ethno_beta_plot, fig.width=6, fig.height=3.5-----------------------------
+coffee <- beta_hg[beta_hg$sp_name == "Coffea canephora" & beta_hg$k > 0, ]
+ggplot(coffee, aes(x = mean, y = reorder(use, mean))) +
+  geom_pointrange(aes(xmin = lower, xmax = upper)) +
+  labs(x = "Share of gardens using Coffea canephora (90% interval)", y = "")
 
-sp_b_data <- ethnobotanydata %>% filter(sp_name == "sp_b") 
+## ----ethno_boot_uses----------------------------------------------------------
+avocado <- homegardens$sale[homegardens$sp_name == "Persea americana"]
+bean <- homegardens$sale[homegardens$sp_name == "Phaseolus vulgaris"]
 
-sp_b_use <- ethno_boot(sp_b_data$Use_3, statistic = mean, n1 = 1000)
+set.seed(1)
+avocado_boot <- ethno_boot(avocado, statistic = mean, n1 = 1000)
+bean_boot <- ethno_boot(bean, statistic = mean, n1 = 1000)
 
+quantile(avocado_boot, c(0.05, 0.95))
+quantile(bean_boot, c(0.05, 0.95))
 
-## ----ethno_boot_URs-----------------------------------------------------------
-quantile(sp_a_use, c(0.05, 0.95))
-quantile(sp_b_use, c(0.05, 0.95))
+## ----ethno_boot_diff----------------------------------------------------------
+quantile(bean_boot - avocado_boot, c(0.05, 0.95))
+mean(bean_boot > avocado_boot)  # probability beans are sold more often
 
-## ----fig.width=7, fig.height=7------------------------------------------------
-boot_data <- data.frame(sp_a_use, sp_b_use)
+## ----plot_boot_ridges, fig.width=7, fig.height=3.5----------------------------
+boot_long <- data.frame(species = rep(c("Persea americana", "Phaseolus vulgaris"), each = 1000),
+                        value = c(avocado_boot, bean_boot))
+ggplot(boot_long, aes(x = value, y = species, fill = species)) +
+  ggridges::geom_density_ridges() +
+  ggridges::theme_ridges() +
+  theme(legend.position = "none") +
+  labs(y = "", x = "Bayesian bootstrap of the share of gardens selling the plant")
 
-ethno_boot_melt <- reshape2::melt(boot_data)
+## ----ethno_boot_rare----------------------------------------------------------
+no_use <- homegardens$hygiene[homegardens$sp_name == "Persea americana"]
+sum(no_use)  # no garden reports this use
+quantile(ethno_boot(no_use, mean), c(0.05, 0.95))
+persea <- ethno_beta(homegardens[homegardens$sp_name == "Persea americana", ])
+persea[persea$use == "hygiene", ]
 
-## ----plot_boot_ridges, fig.width=7, fig.height=4------------------------------
-ggplot2::ggplot(ethno_boot_melt, aes(x = value, 
-                y = variable, fill = variable)) +
-                ggridges::geom_density_ridges() +
-                ggridges::theme_ridges() + 
-                theme(legend.position = "none") +
-                labs(y= "", x = "Example Bayesian bootstraps of the probability of use for two species")
+## ----ethno_saturation, fig.width=5, fig.height=3.5----------------------------
+sat <- ethno_saturation(homegardens, n_perm = 100)
+ggplot(sat, aes(n_informants, mean)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.3) +
+  geom_line() +
+  labs(x = "Gardens", y = "Distinct species-use pairs")
 
-## ----ethno_sp_a---------------------------------------------------------------
-ethno_sp_a <- dplyr::filter(ethnobotanydata, sp_name == "sp_a")
+## ----ethno_consensus----------------------------------------------------------
+common <- names(which(table(homegardens$sp_name) >= 30))
+hg_common <- droplevels(homegardens[homegardens$sp_name %in% common, ])
+cons <- ethno_consensus(hg_common)
+cons$converged
+summary(cons$competence$D)
+head(cons$truth[order(-cons$truth$p_used), ], 8)
 
-## ----answers------------------------------------------------------------------
-  answers <- 2
+## ----competence_district, fig.width=6, fig.height=3.5-------------------------
+comp <- merge(cons$competence, homegardens_info, by = "informant")
+ggplot(comp, aes(district, D)) +
+  geom_boxplot() +
+  labs(x = "", y = "Estimated competence (D)")
 
-## ----ethno_compet_sp_a--------------------------------------------------------
-ethno_compet_sp_a <- dplyr::recode(ethno_sp_a$informant, 
-    inform_a = 0.9,inform_b = 0.5,inform_c = 0.5,
-    inform_d = 0.9, inform_e = 0.9, inform_f = 0.5,
-    inform_g = 0.7,inform_h = 0.5,inform_i = 0.9,
-    inform_j= 0.9, inform_eight = 0.9,inform_five = 0.6,
-    inform_four = 0.5,inform_nine = 0.9, 
-    inform_one = 0.5, inform_seven = 0.5,
-    inform_six= 0.9, inform_ten = 0.9, 
-    inform_three = 0.9, inform_two = 0.5)
+## ----ethno_bayes_consensus----------------------------------------------------
+coffee_data <- hg_common[hg_common$sp_name == "Coffea canephora", ]
+coffee_D <- cons$competence$D[match(coffee_data$informant, cons$competence$informant)]
+coffee_consensus <- ethno_bayes_consensus(coffee_data, answers = 2,
+                                          prior_for_answers = coffee_D)
+round(coffee_consensus["1", ], 3)  # probability each use is in the consensus
 
-## ----ethno_sp_a_bayes---------------------------------------------------------
-ethno_sp_a_bayes <- ethnobotanyR::ethno_bayes_consensus(ethno_sp_a, 
-                    answers = 2,
-                    #here we keep the default normal distribution with `prior = -1`
-                    prior_for_answers = ethno_compet_sp_a) 
+## ----homegardens_model--------------------------------------------------------
+hg <- merge(merge(homegardens, homegardens_species, by = "sp_name"),
+            homegardens_info, by = "informant")
+hg <- droplevels(hg[hg$type != "Palm", ])  # one palm species: too few to estimate
+fit <- glm(medicine ~ type + native + nearest_market_km, data = hg, family = binomial)
+round(summary(fit)$coefficients, 2)
 
-## ----heatmap------------------------------------------------------------------
-heatmap(ethno_sp_a_bayes)
-
-## ----ethno_sp_a_rich----------------------------------------------------------
-set.seed(123) #make random number reproducible
-ethno_sp_a_rich <- data.frame(replicate(3,sample(0:10,20,rep=TRUE)))
-  names(ethno_sp_a_rich) <- 
-  gsub(x = names(ethno_sp_a_rich), 
-  pattern = "X", replacement = "Use_")  
-  ethno_sp_a_rich$informant <- sample(c('User_1', 'User_2'), 
-  20, replace=TRUE)
-  ethno_sp_a_rich$sp_name <- sample(c('sp_a'), 
-  20, replace=TRUE)
-
-## -----------------------------------------------------------------------------
-# Assign prior competencies: higher values (e.g., 0.9) indicate we trust that informant's data more.
-ethno_compet_sp_a_rich <- 
-          dplyr::recode(ethno_sp_a_rich$informant,
-          User_1 = 0.9, User_2 = 0.5)
-
-## ----fig.width=7, fig.height=7------------------------------------------------
-ethno_sp_a_bayes <- ethnobotanyR::ethno_bayes_consensus(ethno_sp_a_rich,
-       answers = 10, 
-       prior_for_answers = ethno_compet_sp_a_rich, 
-       prior=-1) #keep a normal prior in this example with -1
-
-## ----fig.width=7, fig.height=7------------------------------------------------
-ethno_sp_a_bayes_melt <-  ethno_sp_a_bayes %>%
-  as.data.frame() %>%
-  reshape2::melt()
-
-## ----fig.width=7, fig.height=4------------------------------------------------
-ggplot2::ggplot(ethno_sp_a_bayes_melt, aes(x = value, 
-                y = variable, fill = variable)) +
-                ggridges::geom_density_ridges() +
-                ggridges::theme_ridges() + 
-                theme(legend.position = "none")+
-                labs(y= "", x = "Example ethno_bayes_consensus of use categories for sp_a")
+## ----homegardens_mixed, eval = requireNamespace("lme4", quietly = TRUE)-------
+fit_mixed <- lme4::glmer(medicine ~ type + native + scale(nearest_market_km) + (1 | informant),
+                         data = hg, family = binomial)
+round(summary(fit_mixed)$coefficients, 2)
 

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Cory Whitney" />
 
-<meta name="date" content="2026-02-24" />
+<meta name="date" content="2026-10-06" />
 
 <title>Honest Ethnobotany: Quantitative Indices, Their Limitations, and How to Use Them Responsibly</title>
 
@@ -342,7 +342,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Honest Ethnobotany: Quantitative Indices,
 Their Limitations, and How to Use Them Responsibly</h1>
 <h4 class="author">Cory Whitney</h4>
-<h4 class="date">2026-02-24</h4>
+<h4 class="date">2026-10-06</h4>
 
 
 
@@ -742,8 +742,10 @@ uncertain. It invites readers to see the margin of error.</p>
 <h3>Example: Calculating a Bayesian Credible Interval for Use Value in
 R</h3>
 <p>You can use a simple Bayesian approach to calculate a credible
-interval for Use Value (UV) using the Beta-binomial model. This is
-robust for small samples and easy to interpret:</p>
+interval for the share of informants citing a use using the
+Beta-binomial model (<code>ethno_beta()</code> does this per species and
+use). It applies to 0/1 citations per informant, not to UV, which can
+exceed 1. This is robust for small samples and easy to interpret:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Suppose 12 citations out of 20 informants</span></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="dv">12</span>  <span class="co"># citations</span></span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">20</span>  <span class="co"># informants</span></span>
@@ -760,10 +762,10 @@ robust for small samples and easy to interpret:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># 95% credible interval</span></span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>ci_uv <span class="ot">&lt;-</span> <span class="fu">qbeta</span>(<span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>), alpha_post, beta_post)</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># upper </span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># lower</span></span>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>ci_uv[<span class="dv">1</span>]</span></code></pre></div>
 <pre><code>## [1] 0.3843544</code></pre>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># lower </span></span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># upper</span></span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>ci_uv[<span class="dv">2</span>]</span></code></pre></div>
 <pre><code>## [1] 0.7818031</code></pre>
 <p><strong>Interpretation:</strong> This gives the probability that the
